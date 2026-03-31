@@ -1,7 +1,8 @@
 name: guardian-os
 description: Atomic Qtile + COSMIC with CachyOS Kernel
 
-base-image: ghcr.io/fedora-linux/cosmic-atomic:latest
+base-image: ghcr.io/fedora-linux/cosmic-atomic
+image-version: latest
 
 modules:
   - type: akmods # This is how we swap to the CachyOS Kernel
