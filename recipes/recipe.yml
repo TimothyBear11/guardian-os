@@ -18,17 +18,9 @@ modules:
       - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
 
   # STEP 1.5: The Kernel Swap (High Risk / High Reward!)
-  - type: rpm-ostree
-    install:
-      - kernel-cachyos
-      - kernel-cachyos-devel-matched
-    # We use 'remove' to rip out the stock Fedora kernel simultaneously
-    remove:
-      - kernel
-      - kernel-core
-      - kernel-modules
-      - kernel-modules-core
-      - kernel-modules-extra
+  - type: script
+    snippets:
+      - "rpm-ostree override remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra --install kernel-cachyos"
 
   # STEP 2: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
   - type: brew
