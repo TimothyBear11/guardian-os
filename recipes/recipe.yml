@@ -29,8 +29,8 @@ modules:
   # STEP 4: Inject your local Bloodstone assets
   - type: files
     files:
-      - source: files/config
+      - source: config               # Removed the "files/" prefix
         destination: /etc/skel/.config
         
-      - source: files/system-fonts
+      - source: system-fonts         # Removed the "files/" prefix
         destination: /etc/skel/.local/share/fonts
