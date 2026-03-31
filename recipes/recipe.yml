@@ -6,9 +6,17 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 43
 
 modules:
+  # STEP 1: Inject the RPM Fusion Repositories
   - type: rpm-ostree
-    repos:
-      - https://rpmfusion.org/keys/rpmfusion-free-fedora.asc
+    install:
+      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm
+      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
+
+  # STEP 2: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
+  - type: brew
+
+  # STEP 3: Install the Guardian power tools (Steam can now be safely found)
+  - type: rpm-ostree
     install:
       - steam
       - distrobox
@@ -18,13 +26,11 @@ modules:
       - fish
       - neovim
 
-  - type: brew
-
-  # Notice the indentation here! This is the magic key.
+  # STEP 4: Inject your local Bloodstone assets
   - type: files
     files:
-      - source: config
+      - source: files/config
         destination: /etc/skel/.config
         
-      - source: system-fonts
+      - source: files/system-fonts
         destination: /etc/skel/.local/share/fonts
