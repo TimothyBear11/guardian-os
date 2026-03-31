@@ -20,16 +20,18 @@ modules:
   - type: dnf
     # Or use rpm-ostree if you prefer the layered approach
     install:
-      - kernel-cachyos   # or kernel-cachyos-lto, kernel-cachyos-lts, etc.
-    # If you need to remove the stock kernel first (common for custom kernels):
-    # remove:
-    #   - kernel
-    #   - kernel-core
-    #   - kernel-modules
-    #   - kernel-modules-core
-    #   - kernel-modules-extra
-    #   - kernel-devel
-    #   - kernel-devel-matched
+      allow-erasing: true
+      install-weak-deps: false
+      packages:
+        - kernel-cachyos
+        - kernel-cachyos-devel-matched
+    remove:
+      packages:
+        - kernel
+        - kernel-core
+        - kernel-modules
+        - kernel-modules-core
+        - kernel-modules-extra
 
   # STEP 3: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
   - type: brew
