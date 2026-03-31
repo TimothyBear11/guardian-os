@@ -13,6 +13,7 @@ modules:
       - steam
       - distrobox
       - qtile
+      - qtile-extras   # Added right here!
       - kitty
       - fish
       - neovim
@@ -22,3 +23,7 @@ modules:
   - type: files
     source: config
     destination: /etc/skel/.config
+
+  - type: files
+    source: system-fonts                     # The new folder in your repo
+    destination: /etc/skel/.local/share/fonts # The native Linux font folder
