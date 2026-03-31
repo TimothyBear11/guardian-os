@@ -16,7 +16,6 @@ modules:
 
   # STEP 1.5: The Kernel Swap (High Risk / High Reward!)
   - type: rpm-ostree
-    optfix: true
     install:
       - kernel-cachyos
       - kernel-cachyos-devel-matched
