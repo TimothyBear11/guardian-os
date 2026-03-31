@@ -10,31 +10,15 @@ modules:
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
-      - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-43/bieszczaders-kernel-cachyos-fedora-43.repo
+      
     install:
       - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm
       - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
 
-  # STEP 2: The Kernel Swap (Your DNF bypass!)
-  - type: dnf
-    install:
-      allow-erasing: true
-      install-weak-deps: false
-      packages:
-        - kernel-cachyos
-        - kernel-cachyos-devel-matched
-    remove:
-      packages:
-        - kernel
-        - kernel-core
-        - kernel-modules
-        - kernel-modules-core
-        - kernel-modules-extra
-
-  # STEP 3: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
+  # STEP 2: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
   - type: brew
 
-  # STEP 4: Install the Guardian power tools (Steam can now be safely found)
+  # STEP 3: Install the Guardian power tools (Steam can now be safely found)
   - type: rpm-ostree
     install:
       - steam
@@ -56,7 +40,7 @@ modules:
       - firefox
       - firefox-langpacks
 
-  # STEP 5: Inject your local Bloodstone assets
+  # STEP 4: Inject your local Bloodstone assets
   - type: files
     files:
       - source: config               # Removed the "files/" prefix
