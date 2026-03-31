@@ -1,28 +1,24 @@
+---
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: Atomic Qtile + COSMIC with CachyOS Kernel
-
+description: Atomic Qtile + COSMIC workstation
 base-image: ghcr.io/fedora-linux/cosmic-atomic
 image-version: latest
 
 modules:
-  - type: akmods # This is how we swap to the CachyOS Kernel
-    base-image: ghcr.io/ublue-os/main-kernel:latest
-    kernel-flavor: cachyos
-
   - type: rpm-ostree
     repos:
       - https://rpmfusion.org/keys/rpmfusion-free-fedora.asc
-    packages:
-      - steam        # Direct GPU access
-      - distrobox    # Your "Swiss Army Knife"
-      - qtile        # The Main Event
-      - kitty        # The Terminal
-      - fish         # The Shell
-      - neovim       # The Editor
+    install:
+      - steam
+      - distrobox
+      - qtile
+      - kitty
+      - fish
+      - neovim
 
-  - type: nix        # Isolated Nix power
-  - type: brew       # Fast CLI tools
+  - type: brew
 
   - type: files
-    source: config   # This folder in your repo holds your .config files
+    source: config
     destination: /etc/skel/.config
