@@ -20,10 +20,11 @@ modules:
 
   - type: brew
 
+  # Notice the indentation here! This is the magic key.
   - type: files
-    source: files/config    # <--- Updated here
-    destination: /etc/skel/.config
-
-  - type: files
-    source: files/system-fonts   # <--- Updated here
-    destination: /etc/skel/.local/share/fonts
+    files:
+      - source: config
+        destination: /etc/skel/.config
+        
+      - source: system-fonts
+        destination: /etc/skel/.local/share/fonts
