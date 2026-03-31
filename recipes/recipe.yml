@@ -10,15 +10,11 @@ modules:
   # ... your existing RPM Fusion steps ...
 
   # STEP 1.5: Enable the CachyOS kernel COPR (bieszczaders/kernel-cachyos)
-  - type: dnf
-    copr:
-      - bieszczaders/kernel-cachyos
-    # Optional: enable addons repo too if you need it
-    # - bieszczaders/kernel-cachyos-addons
-
+  - type: copr 
+    copr: bieszczaders/kernel-cachyos
+    
   # STEP 2: The Kernel Swap
   - type: dnf
-    # Or use rpm-ostree if you prefer the layered approach
     install:
       allow-erasing: true
       install-weak-deps: false
