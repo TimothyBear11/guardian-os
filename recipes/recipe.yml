@@ -50,6 +50,7 @@ modules:
     remove:
       - firefox
       - firefox-langpacks
+      - mako
 
   # STEP 4.1: UUPD via COPR
   - type: dnf
@@ -91,3 +92,9 @@ modules:
         destination: /etc/skel/.config
       - source: system-fonts
         destination: /etc/skel/.local/share/fonts
+
+  # STEP 7: Enable Background Services
+  - type: systemd
+    system:
+      enabled:
+        - uupd.timer      
