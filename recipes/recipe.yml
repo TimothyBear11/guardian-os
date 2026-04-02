@@ -1,4 +1,3 @@
----
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
 description: Atomic Qtile + COSMIC workstation
@@ -6,32 +5,19 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 43
 
 modules:
-  # STEP 1: Inject Repositories (This worked perfectly earlier!)
+  # STEP 1: Bling (Cleanly automates adding RPMFusion free and nonfree)
+  - type: bling
+    install:
+      - rpmfusion
+
+  # STEP 2: Install Homebrew (Acts as a layer break)
+  - type: brew
+
+  # STEP 3: Base OS Packages (Wayland WM environment & Tools)
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-%OS_VERSION%/yalter-niri-fedora-%OS_VERSION%.repo
-      
-    install:
-      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm
-      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-43.noarch.rpm
-
-  # STEP 2: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
-  - type: brew
-
-  - type: dnf
-    repos:
-      files:
-        - https://negativo17.org/repos/fedora-steam.repo
-    install:
-      packages:
-        - install-weak-deps: false
-      packages:
-        - steam
-        - kernel-modules-extra
-
-  # STEP 3: Install the Guardian power tools (Steam can now be safely found)
-  - type: rpm-ostree
     install:
       - gamescope
       - mangohud
@@ -65,11 +51,36 @@ modules:
       - firefox
       - firefox-langpacks
 
-  # STEP 4: Inject your local Bloodstone assets
+  # STEP 4: Advanced Packages (Steam via Negativo17 & UUPD via COPR)
+  - type: dnf
+    repos:
+      copr:
+        - ublue-os/packages
+      files:
+        - https://negativo17.org/repos/fedora-steam.repo
+    install:
+      packages:
+        - uupd
+        - install-weak-deps: false
+          packages:
+            - steam
+            - kernel-modules-extra
+
+  # STEP 5: System Fonts
+  - type: fonts
+    fonts:
+      nerd-fonts:
+        - FiraCode
+        - JetBrainsMono
+        - Hack
+      google-fonts:
+        - Roboto
+        - Open Sans
+
+  # STEP 6: Inject Local Assets
   - type: files
     files:
-      - source: config               # Removed the "files/" prefix
+      - source: config
         destination: /etc/skel/.config
-        
-      - source: system-fonts         # Removed the "files/" prefix
+      - source: system-fonts
         destination: /etc/skel/.local/share/fonts
