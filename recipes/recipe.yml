@@ -28,19 +28,19 @@ modules:
       - neovim
       - kde-connect
       - rocm-opencl
-      - rocm-hip 
+      - rocm-hip
       - rocminfo
       - zed
       - polkit-kde
-      # Noctalia and Niri 
+      # Noctalia and Niri
       - niri
       - xwayland-satellite
       - noctalia-shell
       - ddcutil
       - wlsunset
-      - cava 
+      - cava
       - cliphist
-      # Qtile 
+      # Qtile
       - qtile-wayland
       - qtile-extras
       - fuzzel
@@ -50,7 +50,6 @@ modules:
     remove:
       - firefox
       - firefox-langpacks
-      - mako
 
   # STEP 4.1: UUPD via COPR
   - type: dnf
@@ -61,18 +60,22 @@ modules:
       packages:
         - uupd
 
-  # STEP 4.2: Steam via Negativo17 
+  # STEP 4.2: Steam via Negativo17
   - type: dnf
     repos:
       files:
         - https://negativo17.org/repos/fedora-steam.repo
     install:
       install-weak-deps: false
-      skip-unavailable: true     # optional but recommended
+      skip-unavailable: true # optional but recommended
       packages:
         - steam
-        - kernel-modules-extra 
-        
+        - kernel-modules-extra
+
+  # STEP 4.3: Neuter Mako (Allows Noctalia to handle notifications)
+  - type: script
+    snippets:
+      - rm -f /usr/share/dbus-1/services/fr.emersion.mako.service
 
   # STEP 5: System Fonts
   - type: fonts
@@ -97,4 +100,4 @@ modules:
   - type: systemd
     system:
       enabled:
-        - uupd.timer      
+        - uupd.timer
