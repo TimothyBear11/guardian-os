@@ -60,7 +60,7 @@ modules:
       packages:
         - uupd
 
-  # STEP 4.2: Steam via Negativo17 (Without weak dependencies)
+  # STEP 4.2: Steam via Negativo17 
   - type: dnf
     repos:
       files:
