@@ -1,0 +1,10 @@
+profile "home-desk" {
+    # Left Monitor (1080p Sceptre)
+    output DP-2 mode 1920x1080 position 0,180
+
+    # Center Monitor (1440p OMEN)
+    output DP-1 mode 2560x1440 position 1920,0
+
+    # Right Monitor (1080p LG)
+    output HDMI-A-1 mode 1920x1080 position 4480,180
+}

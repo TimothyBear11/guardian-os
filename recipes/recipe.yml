@@ -18,16 +18,18 @@ modules:
   # STEP 2: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
   - type: brew
 
+  - type: copr 
+    copr: yalter/niri
+
   # STEP 3: Install the Guardian power tools (Steam can now be safely found)
   - type: rpm-ostree
     install:
+      - libcurl
       - steam
       - gamescope
       - mangohud
       - gamemode
       - distrobox
-      - qtile
-      - qtile-extras
       - kitty
       - fish
       - neovim
@@ -36,7 +38,24 @@ modules:
       - rocm-hip 
       - rocminfo
       - zed
+      - polkit-kde
+      # Noctalia and Niri 
+      - niri
+      - xwayland-satellite
+      - noctalia-shell
+      - ddcutil
+      - wlsunset
+      - cava 
+      - cliphist
+      # Qtile 
+      - qtile-wayland
+      - qtile-extras
+      - fuzzel
+      - swww
+      - kanshi
+      - network-manager-applet
     remove:
+      - libcurl-minimal
       - firefox
       - firefox-langpacks
 

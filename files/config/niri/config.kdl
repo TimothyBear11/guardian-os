@@ -1,0 +1,10 @@
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+include "autostart.kdl"
+include "binds.kdl"
+include "env.kdl"
+include "inputs.kdl"
+include "layerrules.kdl"
+include "layout.kdl"
+include "monitors.kdl"
+include "windowrules.kdl"
