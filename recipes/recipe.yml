@@ -10,6 +10,7 @@ modules:
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
+      - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-%OS_VERSION%/yalter-niri-fedora-%OS_VERSION%.repo
       
     install:
       - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-43.noarch.rpm
@@ -17,9 +18,6 @@ modules:
 
   # STEP 2: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
   - type: brew
-
-  - type: copr 
-    copr: yalter/niri
 
   # STEP 3: Install the Guardian power tools (Steam can now be safely found)
   - type: rpm-ostree
