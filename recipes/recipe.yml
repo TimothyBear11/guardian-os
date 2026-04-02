@@ -19,11 +19,20 @@ modules:
   # STEP 2: Install Homebrew (This acts as a "Layer Break" so Step 1 finishes completely)
   - type: brew
 
+  - type: dnf
+    repos:
+      files:
+        - https://negativo17.org/repos/fedora-steam.repo
+    install:
+      packages:
+        - install-weak-deps: false
+      packages:
+        - steam
+        - kernel-modules-extra
+
   # STEP 3: Install the Guardian power tools (Steam can now be safely found)
   - type: rpm-ostree
     install:
-      - libcurl
-      - steam
       - gamescope
       - mangohud
       - gamemode
@@ -53,7 +62,6 @@ modules:
       - kanshi
       - network-manager-applet
     remove:
-      - libcurl-minimal
       - firefox
       - firefox-langpacks
 
