@@ -62,6 +62,7 @@ modules:
 
   # STEP 4.2: Steam via Negativo17 
   - type: dnf
+    install-weak-deps: false
     repos:
       files:
         - https://negativo17.org/repos/fedora-steam.repo
@@ -69,7 +70,7 @@ modules:
       packages:
         - steam
         - kernel-modules-extra
-    #install-weak-deps: false    
+        
 
   # STEP 5: System Fonts
   - type: fonts
