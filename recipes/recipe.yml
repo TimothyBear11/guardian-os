@@ -51,16 +51,22 @@ modules:
       - firefox
       - firefox-langpacks
 
-  # STEP 4: Advanced Packages (Steam via Negativo17 & UUPD via COPR)
+  # STEP 4.1: UUPD via COPR
   - type: dnf
     repos:
       copr:
         - ublue-os/packages
+    install:
+      packages:
+        - uupd
+
+  # STEP 4.2: Steam via Negativo17 (Without weak dependencies)
+  - type: dnf
+    repos:
       files:
         - https://negativo17.org/repos/fedora-steam.repo
     install:
       packages:
-        - uupd
         - install-weak-deps: false
           packages:
             - steam
