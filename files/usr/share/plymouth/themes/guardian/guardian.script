@@ -1,0 +1,23 @@
+// 1. Set the background color (Black)
+// Values are R, G, B as percentages from 0.0 to 1.0
+Window.SetBackgroundTopColor (0.0, 0.0, 0.0);
+Window.SetBackgroundBottomColor (0.0, 0.0, 0.0);
+
+// 2. Load the image from the same folder
+logo_image = Image("logo.png");
+
+// 3. Create a sprite (the object that actually gets drawn)
+logo_sprite = Sprite(logo_image);
+
+// 4. Get the screen and logo dimensions to calculate the center
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+logo_width = logo_image.GetWidth();
+logo_height = logo_image.GetHeight();
+
+logo_x = (screen_width / 2) - (logo_width / 2);
+logo_y = (screen_height / 2) - (logo_height / 2);
+
+// 5. Place the logo dead center
+logo_sprite.SetX(logo_x);
+logo_sprite.SetY(logo_y);

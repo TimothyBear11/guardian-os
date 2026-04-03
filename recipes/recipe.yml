@@ -32,6 +32,7 @@ modules:
       - rocminfo
       - zed
       - polkit-kde
+      - xdg-desktop-portal-gtk
       # Noctalia and Niri
       - niri
       - xwayland-satellite
@@ -101,3 +102,15 @@ modules:
     system:
       enabled:
         - uupd.timer
+
+  # STEP 8: Rebrand the OS
+  - type: os-release
+    properties:
+      NAME: Guardian OS
+      PRETTY_NAME: Guardian OS
+      ID: guardian_os
+      VARIANT: COSMIC
+      VARIANT_ID: cosmic
+
+  # STEP 9: Rebuild the bootloader to inject the Guardian OS logo
+  - type: initramfs
