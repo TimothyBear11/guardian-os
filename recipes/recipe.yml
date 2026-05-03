@@ -5,12 +5,19 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Basic Bling (RPM Fusion)
-  - type: bling
-    install:
-      - rpmfusion
+  # STEP 1: Manual RPM Fusion (No external script file needed)
+  - type: script
+    snippets:
+      - |
+        set -ouex pipefail
+        rpm-ostree install \
+            https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
+            https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+        # Ensure rawhide stays off and stable stays on
+        sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
+        sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: Core Desktop Suite
+  # STEP 2: The Core Desktop Suite
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
@@ -35,20 +42,21 @@ modules:
       - xdg-desktop-portal-gtk
       - jq
       - socat
+      - polkit-kde
 
   # STEP 3: Chezmoi
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: System Styling & Cleanup
+  # STEP 4: Styling & Customization
   - type: script
     snippets:
       - "curl -fsSL https://install.danklinux.com | sh"
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
-      - "echo 'Setting Plymouth theme...' && plymouth-set-default-theme guardian"
+      - "plymouth-set-default-theme guardian"
 
-  # STEP 5: Assets (Matching your repo structure)
+  # STEP 5: Assets Mapping
   - type: files
     files:
       - source: system-fonts
@@ -58,11 +66,11 @@ modules:
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
 
-  # STEP 6: Rebrand & Rebuild Initramfs
+  # STEP 6: Rebrand & Rebuild
   - type: os-release
     properties:
       NAME: Guardian OS
       ID: guardian_os
       VARIANT_ID: cosmic
 
-  - type: initramfs # This is the "secret sauce" to make Plymouth work early
+  - type: initramfs
