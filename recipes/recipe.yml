@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Centennial Guardian (Stable Kernel + SCX Gaming + Emacs)
+description: The Final Guardian Workstation (SCX Fixed + Konsole + Emacs)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Manual RPM Fusion via Primary Mirrors
+  # STEP 1: RPM Fusion Fix
   - type: script
     snippets:
       - |
@@ -16,7 +16,7 @@ modules:
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: The Core Desktop Suite & Wizard Tools
+  # STEP 2: The Core Desktop & Wizard Suite
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
@@ -27,6 +27,7 @@ modules:
     install:
       - plymouth-plugin-script
       - scx-scheds           
+      - scx-tools            # Added for better management
       - mangowm
       - niri
       - hyprland
@@ -39,12 +40,10 @@ modules:
       - konsole              
       - fish
       - neovim
-      # EMACS & DOOM DEPENDENCIES
-      - emacs-nox        # Terminal version (perfect for Konsole containers)
-      - ripgrep          # Critical for Doom's fast searching
-      - fd-find          # Critical for Doom's file finding
-      - git              # For Magit and Doom updates
-      # PORTALS & LIBS
+      - emacs-nox        
+      - ripgrep          
+      - fd-find          
+      - git              
       - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
       - jq
@@ -56,7 +55,7 @@ modules:
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Assets Mapping (Physical files only)
+  # STEP 4: Assets Mapping
   - type: files
     files:
       - source: system-fonts
@@ -66,20 +65,16 @@ modules:
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
 
-  # STEP 5: System Config & Styling
+  # STEP 5: System Config & Service Enablement (The Fix)
   - type: script
     snippets:
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
       - "plymouth-set-default-theme guardian"
-      # Create scheduler config (Fixed: no 'null' source error)
       - "mkdir -p /etc/default && echo 'SCX_SCHEDULER=scx_lavd' > /etc/default/scx"
+      # Enable scx directly in the script to bypass the module failure
+      - "systemctl enable scx.service"
 
-  # STEP 6: Rebrand & Enable Services
-  - type: systemd
-    system:
-      enabled:
-        - scx.service
-
+  # STEP 6: Branding
   - type: os-release
     properties:
       NAME: Guardian OS
