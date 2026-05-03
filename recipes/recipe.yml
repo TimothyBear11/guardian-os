@@ -24,6 +24,7 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
     install:
+      - plymouth-plugin-script # THE MISSING PIECE FOR YOUR THEME
       - mangowm
       - niri
       - hyprland
@@ -48,8 +49,7 @@ modules:
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Assets Mapping (MOVE THIS UP)
-  # This puts the files on the disk FIRST.
+  # STEP 4: Assets Mapping (Files FIRST)
   - type: files
     files:
       - source: system-fonts
@@ -60,7 +60,6 @@ modules:
         destination: /usr/share/plymouth/themes/guardian
 
   # STEP 5: System Clean-up & Styling
-  # Now the files exist, so this script won't crash.
   - type: script
     snippets:
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
