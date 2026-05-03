@@ -16,7 +16,7 @@ modules:
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: The Core Desktop Suite (Using the LionHeartP COPR)
+  # STEP 2: The Core Desktop Suite (LionHeartP COPR)
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
@@ -43,18 +43,13 @@ modules:
       - socat
       - polkit-kde
 
-  # STEP 3: Chezmoi (Managing your Palmetto configs)
+  # STEP 3: Chezmoi
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: System Clean-up & Styling
-  - type: script
-    snippets:
-      - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
-      - "plymouth-set-default-theme guardian"
-
-  # STEP 5: Assets Mapping
+  # STEP 4: Assets Mapping (MOVE THIS UP)
+  # This puts the files on the disk FIRST.
   - type: files
     files:
       - source: system-fonts
@@ -63,6 +58,13 @@ modules:
         destination: /etc/plymouth
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
+
+  # STEP 5: System Clean-up & Styling
+  # Now the files exist, so this script won't crash.
+  - type: script
+    snippets:
+      - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
+      - "plymouth-set-default-theme guardian"
 
   # STEP 6: Rebrand & Rebuild Initramfs
   - type: os-release
