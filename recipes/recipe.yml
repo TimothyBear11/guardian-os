@@ -6,10 +6,10 @@ image-version: 44
 
 modules:
   # STEP 1: Manual RPM Fusion
-  - type: rpm-ostree
+  - type: bling
     install:
-      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
-      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+      - rpmfusion
+    repo-version: 44 # This forces it to stay on 44 and ignore Rawhide/45
 
   # STEP 2: The Core Desktop Suite
   - type: rpm-ostree
