@@ -5,36 +5,31 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Manual RPM Fusion (No external script file needed)
+  # STEP 1: Manual RPM Fusion via Primary Mirrors (The Reddit Bug Fix)
   - type: script
     snippets:
       - |
         set -ouex pipefail
         rpm-ostree install \
-            https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
-            https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-        # Ensure rawhide stays off and stable stays on
+            https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
+            https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: The Core Desktop Suite (With Dependency Fix)
+  # STEP 2: The Core Desktop Suite (Using LionHeartP's COPR)
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
-      - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-44/solopasha-hyprland-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
     install:
-      # Explicitly add the missing base library
-      - libdisplay-info
-      # THE COMPOSITORS
       - mangowm
       - niri
       - hyprland
       - qtile-wayland
       - qtile-extras
       - noctalia-shell
-      # TOOLS
       - topgrade
       - gamescope
       - mangohud
@@ -48,7 +43,7 @@ modules:
       - socat
       - polkit-kde
 
-  # STEP 3: Chezmoi
+  # STEP 3: Chezmoi (The Brain)
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
@@ -70,7 +65,7 @@ modules:
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
 
-  # STEP 6: Rebrand & Rebuild
+  # STEP 6: Rebrand & Rebuild Initramfs
   - type: os-release
     properties:
       NAME: Guardian OS
