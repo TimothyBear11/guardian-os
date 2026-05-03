@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Centennial Guardian (Stable Kernel + SCX Gaming)
+description: The Centennial Guardian (Stable Kernel + SCX Gaming + Emacs)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
@@ -16,19 +16,17 @@ modules:
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: The Core Desktop Suite (Fixing the 404)
+  # STEP 2: The Core Desktop Suite & Wizard Tools
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
-      - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-%OS_VERSION%/yalter-niri-fedora-%OS_VERSION%.repo
-      - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-%OS_VERSION%/lionheartp-Hyprland-fedora-%OS_VERSION%.repo
-      - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-%OS_VERSION%/lilay-topgrade-fedora-%OS_VERSION%.repo
-      # FIXED: Points to the Addons repo where scx-scheds actually lives
-      - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos-addons/repo/fedora-%OS_VERSION%/bieszczaders-kernel-cachyos-addons-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos-addons/repo/fedora-44/bieszczaders-kernel-cachyos-addons-fedora-44.repo
     install:
       - plymouth-plugin-script
-      - scx-scheds           # Sched-ext (BPF) schedulers
-      - scx-tools            # Includes scxctl for management
+      - scx-scheds           
       - mangowm
       - niri
       - hyprland
@@ -38,21 +36,27 @@ modules:
       - topgrade
       - gamescope
       - mangohud
-      - konsole              # KONSOLE ONLY - No Kitty!
+      - konsole              
       - fish
       - neovim
+      # EMACS & DOOM DEPENDENCIES
+      - emacs-nox        # Terminal version (perfect for Konsole containers)
+      - ripgrep          # Critical for Doom's fast searching
+      - fd-find          # Critical for Doom's file finding
+      - git              # For Magit and Doom updates
+      # PORTALS & LIBS
       - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
       - jq
       - socat
       - polkit-kde
 
-  # STEP 3: Chezmoi (Your configuration hub)
+  # STEP 3: Chezmoi
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Assets & Scheduler Config
+  # STEP 4: Assets Mapping (Physical files only)
   - type: files
     files:
       - source: system-fonts
@@ -61,16 +65,14 @@ modules:
         destination: /etc/plymouth
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
-      # Tells the systemd service to use scx_lavd for gaming performance
-      - destination: /etc/default/scx
-        contents: |
-          SCX_SCHEDULER=scx_lavd
 
-  # STEP 5: System Clean-up & Styling
+  # STEP 5: System Config & Styling
   - type: script
     snippets:
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
       - "plymouth-set-default-theme guardian"
+      # Create scheduler config (Fixed: no 'null' source error)
+      - "mkdir -p /etc/default && echo 'SCX_SCHEDULER=scx_lavd' > /etc/default/scx"
 
   # STEP 6: Rebrand & Enable Services
   - type: systemd
