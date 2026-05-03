@@ -37,7 +37,7 @@ modules:
       - topgrade
       - gamescope
       - mangohud
-      - kitty
+      - konsole
       - fish
       - neovim
       - xdg-desktop-portal-hyprland
