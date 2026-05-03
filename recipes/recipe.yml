@@ -5,6 +5,17 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
+  # NEW STEP 0: CachyOS Kernel Swap
+  - type: script
+    snippets:
+      - |
+        echo "Installing CachyOS Kernel..."
+        # Add the bieszczaders COPR
+        curl -Lo /etc/yum.repos.d/bieszczaders-kernel-cachyos.repo \
+          https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-44/bieszczaders-kernel-cachyos-fedora-44.repo
+        # Swap the kernel (Standard Atomic Override)
+        rpm-ostree override remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra \
+          --install kernel-cachyos
   # STEP 1: Manual RPM Fusion via Primary Mirrors
   - type: script
     snippets:
@@ -43,6 +54,7 @@ modules:
       - jq
       - socat
       - polkit-kde
+      - scx-scheds
 
   # STEP 3: Chezmoi
   - type: chezmoi
