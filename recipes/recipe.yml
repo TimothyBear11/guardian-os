@@ -1,17 +1,16 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Final Guardian Workstation (Qtile, Niri, Hypr, MangoWM, YT-Music)
+description: The Final Guardian Workstation (Qtile, Niri, Hypr, MangoWM)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Manual RPM Fusion
+  # STEP 1: Basic Bling (RPM Fusion)
   - type: bling
     install:
       - rpmfusion
-    repo-version: 44 # This forces it to stay on 44 and ignore Rawhide/45
 
-  # STEP 2: The Core Desktop Suite
+  # STEP 2: Core Desktop Suite
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
@@ -42,26 +41,28 @@ modules:
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Homebrew (Simplified Flat Format)
-  - type: brew
-    
-  # STEP 5: DMS & Mako Clean-up
+  # STEP 4: System Styling & Cleanup
   - type: script
     snippets:
       - "curl -fsSL https://install.danklinux.com | sh"
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
+      - "echo 'Setting Plymouth theme...' && plymouth-set-default-theme guardian"
 
-  # STEP 6: System Assets (Ensuring only fonts and plymouth remain)
+  # STEP 5: Assets (Matching your repo structure)
   - type: files
     files:
       - source: system-fonts
         destination: /usr/share/fonts/guardian-fonts
       - source: etc/plymouth
+        destination: /etc/plymouth
+      - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
 
+  # STEP 6: Rebrand & Rebuild Initramfs
   - type: os-release
     properties:
       NAME: Guardian OS
       ID: guardian_os
-  
-  - type: initramfs
+      VARIANT_ID: cosmic
+
+  - type: initramfs # This is the "secret sauce" to make Plymouth work early
