@@ -70,6 +70,10 @@ modules:
         destination: /etc/plymouth
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
+      - destination: /etc/default/scx
+        contents: |
+          SCX_SCHEDULER=scx_lavd
+          SCX_FLAGS=""  
 
   # STEP 5: System Clean-up & Styling
   - type: script
@@ -83,5 +87,10 @@ modules:
       NAME: Guardian OS
       ID: guardian_os
       VARIANT_ID: cosmic
+
+  - type: systemd
+    system:
+      enabled:
+        - scx.service  
 
   - type: initramfs
