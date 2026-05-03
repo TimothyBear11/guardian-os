@@ -17,7 +17,7 @@ modules:
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: The Core Desktop Suite
+  # STEP 2: The Core Desktop Suite (With Dependency Fix)
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
@@ -25,12 +25,16 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-44/solopasha-hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
     install:
+      # Explicitly add the missing base library
+      - libdisplay-info
+      # THE COMPOSITORS
       - mangowm
       - niri
       - hyprland
       - qtile-wayland
       - qtile-extras
       - noctalia-shell
+      # TOOLS
       - topgrade
       - gamescope
       - mangohud
