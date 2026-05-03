@@ -1,117 +1,64 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: Atomic Qtile + COSMIC workstation
+description: The Final Guardian Workstation (Qtile, Niri, Hypr, MangoWM)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Manual RPM Fusion (Replaces Bling to avoid Rawhide conflicts)
+  # STEP 1: Manual RPM Fusion (Pinning to 44 to avoid the Rawhide bug)
   - type: rpm-ostree
     install:
       - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
       - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
 
-  # STEP 2: Install Homebrew (Acts as a layer break)
-  - type: brew
-
-  # STEP 3: Base OS Packages (Wayland WM environment & Tools)
+  # STEP 2: The Core Desktop Suite
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
-      - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-%OS_VERSION%/yalter-niri-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-44/solopasha-hyprland-fedora-44.repo
+      - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
     install:
+      # COMPOSITORS
+      - mangowm      # Renamed from MangoWC in Terra repo
+      - niri
+      - hyprland
+      - qtile-wayland
+      - qtile-extras
+      - noctalia-shell
+      # TOOLS & UTILITIES
+      - topgrade
       - gamescope
       - mangohud
       - gamemode
-      - distrobox
       - kitty
       - fish
       - neovim
-      - kde-connect
-      - rocm-opencl
-      - rocm-hip
-      - rocminfo
-      - zed
-      - polkit-kde
+      - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
-      # Noctalia and Niri
-      - niri
-      - xwayland-satellite
-      - noctalia-shell
-      - ddcutil
-      - wlsunset
-      - cava
-      - cliphist
-      # Qtile
-      - qtile-wayland
-      - qtile-extras
-      - fuzzel
-      - swww
-      - kanshi
-      - network-manager-applet
+      - kew         # The TUI music player
+      - rmpc        # The Rust MPD client
     remove:
       - firefox
       - firefox-langpacks
 
-  # STEP 4.1: UUPD via COPR
-  - type: dnf
-    repos:
-      copr:
-        - ublue-os/packages
-    install:
-      packages:
-        - uupd
+  # STEP 3: Chezmoi (Dotfile Automation)
+  - type: chezmoi
+    repository: "https://github.com/timothybear11/dotfiles"
+    all-users: true
 
-  # STEP 4.2: Steam via Negativo17
-  - type: dnf
-    repos:
-      files:
-        - https://negativo17.org/repos/fedora-steam.repo
-    install:
-      install-weak-deps: false
-      skip-unavailable: true # optional but recommended
-      packages:
-        - steam
-        - kernel-modules-extra
-
-  # STEP 4.3: Neuter Mako (Allows Noctalia to handle notifications)
+  # STEP 4: Dank Material Shell (DMS)
   - type: script
     snippets:
-      - rm -f /usr/share/dbus-1/services/fr.emersion.mako.service
+      - |
+        echo "Installing Dank Material Shell..."
+        curl -fsSL https://install.danklinux.com | sh
 
-  # STEP 5: System Fonts
-  - type: fonts
-    fonts:
-      nerd-fonts:
-        - FiraCode
-        - JetBrainsMono
-        - Hack
-      google-fonts:
-        - Roboto
-        - Open Sans
-
-  # STEP 6: Inject Local Assets
-  - type: files
-    files:
-      - source: config
-        destination: /etc/skel/.config
-      - source: system-fonts
-        destination: /etc/skel/.local/share/fonts
-
-  # STEP 7: Enable Background Services
-  - type: systemd
-    system:
-      enabled:
-        - uupd.timer
-
-  # STEP 8: Rebrand the OS
+  # STEP 5: Rebrand & Rebuild
   - type: os-release
     properties:
       NAME: Guardian OS
       PRETTY_NAME: Guardian OS
       ID: guardian_os
-      VARIANT: COSMIC
-      VARIANT_ID: cosmic
-
-  # STEP 9: Rebuild the bootloader to inject the Guardian OS logo
-  - type: initramfs
+  
+  - type: initramfs # Injecting that Bear Logo for the boot screen
