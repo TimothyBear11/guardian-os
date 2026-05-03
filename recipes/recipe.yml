@@ -1,29 +1,11 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Centennial Guardian (CachyOS Kernel + SCX)
+description: The Centennial Guardian (Stable Kernel + SCX Gaming)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 0: CachyOS Kernel Swap
-  - type: rpm-ostree
-    repos:
-      - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-44/bieszczaders-kernel-cachyos-fedora-44.repo
-    # This section handles the swap
-    remove:
-      - kernel
-      - kernel-core
-      - kernel-modules
-      - kernel-modules-core
-      - kernel-modules-extra
-    install:
-      - kernel-cachyos
-      - kernel-cachyos-devel # Useful for future akmods
-    # The fix you found!
-    flags:
-      - "--allow-erasing"
-
-  # STEP 1: Manual RPM Fusion via Primary Mirrors
+  # STEP 1: Manual RPM Fusion via Primary Mirrors (The Reddit Bug Fix)
   - type: script
     snippets:
       - |
@@ -41,17 +23,20 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
+      # The repo for the high-performance schedulers
       - https://copr.fedorainfracloud.org/coprs/bieszczaders/scx/repo/fedora-44/bieszczaders-scx-fedora-44.repo
     install:
       - plymouth-plugin-script
-      - scx-scheds
+      - scx-scheds           # The magic schedulers (lavd, rustland, etc.)
+      - mangowm
       - niri
       - hyprland
       - qtile-wayland
       - qtile-extras
       - noctalia-shell
-      - mangowm
       - topgrade
+      - gamescope
+      - mangohud
       - kitty
       - fish
       - neovim
@@ -61,12 +46,12 @@ modules:
       - socat
       - polkit-kde
 
-  # STEP 3: Chezmoi
+  # STEP 3: Chezmoi (Managing your Palmetto configs)
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Assets & Configs (Files FIRST)
+  # STEP 4: Assets & Scheduler Config (Files FIRST)
   - type: files
     files:
       - source: system-fonts
@@ -75,6 +60,7 @@ modules:
         destination: /etc/plymouth
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
+      # Setting your Ryzen 7 to use the gaming scheduler by default
       - destination: /etc/default/scx
         contents: |
           SCX_SCHEDULER=scx_lavd
@@ -97,4 +83,4 @@ modules:
       ID: guardian_os
       VARIANT_ID: cosmic
 
-  - type: initramfs # CRITICAL: Rebuilds the boot image for the new kernel
+  - type: initramfs
