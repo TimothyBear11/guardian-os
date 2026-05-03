@@ -5,7 +5,7 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Manual RPM Fusion (Fixed for Fedora 44)
+  # STEP 1: Manual RPM Fusion (Pinning to 44)
   - type: rpm-ostree
     install:
       - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
@@ -34,15 +34,16 @@ modules:
       - neovim
       - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
+      - jq # Added for music-peek functionality
 
-  # STEP 3: Chezmoi (Managing the folders you're deleting from the repo)
+  # STEP 3: Chezmoi
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Fixed Brew Module (No 'install' key needed)
+  # STEP 4: Homebrew
   - type: brew
-    packages:
+    content:
       - youtube-music-cli
 
   # STEP 5: DMS & Mako Clean-up
@@ -51,7 +52,7 @@ modules:
       - "curl -fsSL https://install.danklinux.com | sh"
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
 
-  # STEP 6: System Assets (Keep Plymouth and Fonts here)
+  # STEP 6: System Assets (Fonts and Plymouth ONLY)
   - type: files
     files:
       - source: system-fonts
