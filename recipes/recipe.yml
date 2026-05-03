@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Final Guardian Workstation (Qtile, Niri, Hypr, MangoWM)
+description: The Final Guardian Workstation (Qtile, Niri, Hypr, MangoWM, YT-Music)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Manual RPM Fusion (Pinning to 44 to avoid the Rawhide bug)
+  # STEP 1: Manual RPM Fusion (Pinning to Fedora 44)
   - type: rpm-ostree
     install:
       - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
@@ -19,14 +19,14 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/solopasha/hyprland/repo/fedora-44/solopasha-hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
     install:
-      # COMPOSITORS
-      - mangowm      # Renamed from MangoWC in Terra repo
+      # COMPOSITORS (The "Big Four")
+      - mangowm      # Re-verified: Binary name is mangowm in Terra
       - niri
       - hyprland
       - qtile-wayland
       - qtile-extras
       - noctalia-shell
-      # TOOLS & UTILITIES
+      # TOOLS & PERFORMANCE
       - topgrade
       - gamescope
       - mangohud
@@ -36,8 +36,6 @@ modules:
       - neovim
       - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
-      - kew         # The TUI music player
-      - rmpc        # The Rust MPD client
     remove:
       - firefox
       - firefox-langpacks
@@ -47,18 +45,32 @@ modules:
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Dank Material Shell (DMS)
+  # STEP 4: Music & External Tools (YTM TUI via Brew)
+  - type: brew
+    install:
+      - youtube-music-cli
+
+  # STEP 5: Dank Material Shell (DMS) & Maintenance
   - type: script
     snippets:
       - |
         echo "Installing Dank Material Shell..."
         curl -fsSL https://install.danklinux.com | sh
+      - |
+        echo "Neutering Mako for Noctalia/DMS..."
+        rm -f /usr/share/dbus-1/services/fr.emersion.mako.service
 
-  # STEP 5: Rebrand & Rebuild
+  # STEP 6: Inject Local Assets (Fonts & Skel)
+  - type: files
+    files:
+      - source: config
+        destination: /etc/skel/.config
+
+  # STEP 7: Rebrand & Bootloader Injection
   - type: os-release
     properties:
       NAME: Guardian OS
       PRETTY_NAME: Guardian OS
       ID: guardian_os
   
-  - type: initramfs # Injecting that Bear Logo for the boot screen
+  - type: initramfs # Injecting the Bear Logo
