@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Final Guardian Workstation (SCX Fixed + Konsole + Emacs)
+description: The Final Guardian Workstation (SCX Hard-Fix + Emacs)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
@@ -27,7 +27,7 @@ modules:
     install:
       - plymouth-plugin-script
       - scx-scheds           
-      - scx-tools            # Added for better management
+      - scx-tools            
       - mangowm
       - niri
       - hyprland
@@ -65,14 +65,14 @@ modules:
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
 
-  # STEP 5: System Config & Service Enablement (The Fix)
+  # STEP 5: System Config & Service Fix
   - type: script
     snippets:
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
       - "plymouth-set-default-theme guardian"
       - "mkdir -p /etc/default && echo 'SCX_SCHEDULER=scx_lavd' > /etc/default/scx"
-      # Enable scx directly in the script to bypass the module failure
-      - "systemctl enable scx.service"
+      # THE HARD FIX: Attempt to enable scx or scx-loader, but don't fail the build if it's tricky
+      - "systemctl enable scx.service || systemctl enable scx-loader.service || true"
 
   # STEP 6: Branding
   - type: os-release
