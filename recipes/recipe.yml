@@ -5,7 +5,7 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Manual RPM Fusion via Primary Mirrors (The Reddit Bug Fix)
+  # STEP 1: Manual RPM Fusion via Primary Mirrors
   - type: script
     snippets:
       - |
@@ -16,7 +16,7 @@ modules:
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: The Core Desktop Suite (Using LionHeartP's COPR)
+  # STEP 2: The Core Desktop Suite (Using the LionHeartP COPR)
   - type: rpm-ostree
     repos:
       - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
@@ -43,15 +43,14 @@ modules:
       - socat
       - polkit-kde
 
-  # STEP 3: Chezmoi (The Brain)
+  # STEP 3: Chezmoi (Managing your Palmetto configs)
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  # STEP 4: Styling & Customization
+  # STEP 4: System Clean-up & Styling
   - type: script
     snippets:
-      - "curl -fsSL https://install.danklinux.com | sh"
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
       - "plymouth-set-default-theme guardian"
 
