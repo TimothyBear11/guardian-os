@@ -44,9 +44,7 @@ modules:
 
   # STEP 4: Homebrew (Simplified Flat Format)
   - type: brew
-    packages:
-      - youtube-music-cli
-
+    
   # STEP 5: DMS & Mako Clean-up
   - type: script
     snippets:
