@@ -45,6 +45,7 @@ modules:
       - ripgrep
       - fd-find
       - git
+      - xdg-desktop-portal
       - xdg-desktop-portal-hyprland
       - xdg-desktop-portal-gtk
       - jq
