@@ -56,11 +56,17 @@ modules:
       - network-manager-applet
       - distrobox
       - mpv
+      - fastfetch
+      - pciutils
 
-  # STEP 3: Chezmoi
+  # STEP 3: Chezmoi and homebrew
   - type: chezmoi
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
+
+  - type: homebrew
+    packages:
+      - gh
 
   # STEP 4: Assets Mapping
   - type: files
