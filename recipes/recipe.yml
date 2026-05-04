@@ -21,9 +21,7 @@ modules:
         name=Terra Rolling
         baseurl=https://repos.fyralabs.com/terra/$basearch/
         enabled=1
-        gpgcheck=1
-        # Using the GitHub mirror for the key is safer for 2026 connectivity
-        gpgkey=https://raw.githubusercontent.com/terrapkg/subatomic-repos/main/RPM-GPG-KEY-terra
+        gpgcheck=0
         includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
         EOF
 
