@@ -8,19 +8,18 @@ modules:
   # STEP 1: Repository & Package Management (The New DNF Module)
   - type: dnf
     repos:
-      # RPM Fusion (General Multimedia)
-      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
-      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-      # Steam (Negativo17 - The "Previous Gen" favorite)
-      - https://negativo17.org/repos/fedora-steam.repo
-      # COPRs
-      - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
-      - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
-      - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
-      - https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-44/avengemedia-dms-fedora-44.repo
+      # Use the 'files' key for a list of URLs
+      files:
+        - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
+        - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+        - https://negativo17.org/repos/fedora-steam.repo
+        - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
+        - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
+        - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
+        - https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-44/avengemedia-dms-fedora-44.repo
     install:
       packages:
-        # Gaming & GPU Compute (RX 6700 XT Stack)
+        # GROUP 1: Gaming & Compute (Disabled weak deps to stop bloat)
         - install-weak-deps: false
           packages:
             - steam
@@ -36,21 +35,21 @@ modules:
             - rocm-smi
             - clinfo
             - nvtop
-        # Desktop Environments & Schedulers
-        - niri
-        - hyprland
-        - qtile-wayland
-        - scx-scheds
-        - scx-tools
-        - dms
-        - topgrade
-        # Essential Den Tools
-        - fish
-        - neovim
-        - emacs-nox
-        - fastfetch
-        - btop
-        - plymouth-plugin-script
+        # GROUP 2: Desktop & System (Standard installation)
+        - packages:
+            - niri
+            - hyprland
+            - qtile-wayland
+            - scx-scheds
+            - scx-tools
+            - dms
+            - topgrade
+            - fish
+            - neovim
+            - emacs-nox
+            - fastfetch
+            - btop
+            - plymouth-plugin-script
 
   # STEP 2: Jailing Terra (Prevents conflicts with core system packages)
   - type: script
