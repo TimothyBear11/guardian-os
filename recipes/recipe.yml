@@ -36,7 +36,8 @@ modules:
         - lionheartp/Hyprland
         - lilay/topgrade
         - avengemedia/dms
-        - sched-ext/sched-ext
+        - bieszczaders/kernel-cachyos
+        - bieszczaders/kernel-cachyos-addons
     install:
       install-weak-deps: false
       packages:
