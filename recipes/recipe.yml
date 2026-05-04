@@ -59,6 +59,10 @@ modules:
       - fastfetch
       - pciutils
       - tmux
+      - cmake
+      - gcc-c++
+      - cpio
+      - pkgconf-pkg-config
 
   # STEP 3: Chezmoi and homebrew
   - type: chezmoi
