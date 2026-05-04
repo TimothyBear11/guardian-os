@@ -61,7 +61,7 @@ modules:
       - tmux
 
   - type: script
-    scripts:
+    snippets:
       - |
         # MANUALLY INSTALL NOCTALIA TO AVOID RPM CONFLICTS
         # We download and extract the RPM to a custom path (/opt/noctalia)
