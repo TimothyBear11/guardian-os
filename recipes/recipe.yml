@@ -36,6 +36,7 @@ modules:
         - lionheartp/Hyprland
         - lilay/topgrade
         - avengemedia/dms
+        - sched-ext/sched-ext
     install:
       install-weak-deps: false
       packages:
