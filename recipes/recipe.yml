@@ -93,7 +93,7 @@ modules:
       # SETTING THE SCHEDULER: Switched from lavd to rusty for 6.19 stability
       - "mkdir -p /etc/default && echo 'SCX_SCHEDULER=scx_rusty' > /etc/default/scx"
       # THE HARD FIX: Attempt to enable scx or scx-loader, but don't fail the build if it's tricky
-      - "systemctl enable scx.service || systemctl enable scx-loader.service || true"
+      - "systemctl enable scx_loader.service || true"
 
   - type: script
     snippets:
