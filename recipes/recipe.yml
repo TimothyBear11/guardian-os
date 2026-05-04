@@ -54,6 +54,7 @@ modules:
       - libnotify
       - network-manager-applet
       - distrobox
+      - mpv
 
   # STEP 3: Chezmoi
   - type: chezmoi
