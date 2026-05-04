@@ -65,6 +65,11 @@ modules:
       - cpio
       - pkgconf-pkg-config
       - btop
+      - ddcutil
+      - cliphist
+      - wlsunset
+      - brightnessctl
+      - imagemagick
 
   # STEP 3: Chezmoi and homebrew
   - type: chezmoi
