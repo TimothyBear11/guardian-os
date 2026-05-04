@@ -105,29 +105,34 @@ modules:
   - type: script
     snippets:
       - |
-        # 1. Prepare the persistent home and clean up the old attempt
+        # 1. Prepare the persistent home
         mkdir -p /usr/lib/noctalia
         rm -rf /usr/lib/noctalia/*
         cd /tmp
 
-        # 2. Enable the Terra Repo (The correct home for noctalia-qs)
-        # Since you're on a bootc/Atomic-style build, we'll pull the repo file directly
+        # 2. Ensure Terra Repo is active
         curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo -o /etc/yum.repos.d/terra.repo
 
-        # 3. Download the BINARY package
-        # We use --arch to be safe and ensure we aren't getting the .src.rpm again
-        dnf download -y noctalia-qs --arch=$(arch) --releasever=44
+        # 3. Download BOTH the engine and the shell
+        # noctalia-qs: The engine (binary: qs)
+        # noctalia-shell: The actual UI/Config files
+        dnf download -y noctalia-qs noctalia-shell --arch=$(arch) --releasever=44
 
-        # 4. Extract the binary hierarchy into our subfolder
-        # This will create /usr/lib/noctalia/usr/bin/qs (note the binary name is 'qs')
+        # 4. Extract everything into our custom prefix
+        # This preserves the /usr/bin and /usr/share hierarchy inside /usr/lib/noctalia
         rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
+        rpm2cpio noctalia-shell*.rpm | cpio -idmv -D /usr/lib/noctalia
 
-        # 5. Update the wrapper with the correct binary name ('qs')
+        # 5. Update the wrapper to point to the internal shell path
+        # Since we extracted to a custom path, we point directly to the shell.qml
+        # to bypass the standard search path issues.
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
-        # Note: noctalia-qs provides the binary as 'qs', not 'quickshell'
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
-        exec /usr/lib/noctalia/usr/bin/qs "$@"
+
+        # We point to the 'qs' binary and explicitly path to the extracted shell.qml
+        # The path below is the standard location for the Terra noctalia-shell package
+        exec /usr/lib/noctalia/usr/bin/qs -c /usr/lib/noctalia/usr/share/quickshell/shells/noctalia/shell.qml "$@"
         EOF
 
         chmod +x /usr/bin/noctalia-qs
@@ -141,6 +146,6 @@ modules:
       PRETTY_NAME: Guardian OS (Atomic)
       VARIANT: Guardian Edition
       VARIANT_ID: cosmic
-      HOME_URL: "https://github.com/timothybear11/dotfiles"
+      HOME_URL: "https://github.com/timothybear11/guardian-os"
 
   - type: initramfs
