@@ -5,6 +5,15 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
+  - type: script
+    snippets:
+      # Install RPMFusion repos first (must be before dnf tries to use them)
+      - |
+        set -euo pipefail
+        echo "Installing RPMFusion repositories..."
+        dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
+        dnf install -y https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+        echo "RPMFusion repositories installed"
   # STEP 1: Repository Configuration (Fixed)
   - type: dnf
     repos:
