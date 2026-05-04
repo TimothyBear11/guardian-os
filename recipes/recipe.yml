@@ -11,7 +11,6 @@ modules:
       files:
         # Use only .repo files, not .rpm installers
         - https://negativo17.org/repos/fedora-steam.repo
-        - https://repos.fyralabs.com/terra44/fedora-44/terra44.repo
       copr:
         - yalter/niri
         - lionheartp/Hyprland
@@ -58,9 +57,17 @@ modules:
         - btop
         - plymouth-plugin-script
 
-  # STEP 2: System Services & Assets
+  # STEP 2: Terra Repository & System Services
   - type: script
     snippets:
+      # Install Terra repository (required for noctalia)
+      - |
+        set -euo pipefail
+        echo "Installing Terra repository..."
+        curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo | tee /etc/yum.repos.d/terra.repo
+        dnf install -y terra-release
+        echo "Terra repository installed successfully"
+
       # Sched-ext: Rusty 5800X Optimization
       - |
         set -euo pipefail
