@@ -15,15 +15,15 @@ modules:
             https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
             https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
 
-        # Jail the Terra Repo so it doesn't break Steam/IBus
+        # Jail the Terra Repo (Using the rolling 'terra' path instead of 'terra44')
         cat << 'EOF' > /etc/yum.repos.d/terra.repo
         [terra]
-        name=Terra $releasever
-        baseurl=https://repos.fyralabs.com/terra$releasever/$basearch/
+        name=Terra Rolling
+        # We use 'terra' instead of 'terra$releasever' to avoid the 404
+        baseurl=https://repos.fyralabs.com/terra/$basearch/
         enabled=1
         gpgcheck=1
-        gpgkey=https://repos.fyralabs.com/terra$releasever/key.asc
-        # ONLY allow Terra to provide these specific packages
+        gpgkey=https://repos.fyralabs.com/terra/key.asc
         includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
         EOF
 
