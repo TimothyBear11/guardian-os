@@ -65,8 +65,7 @@ modules:
     all-users: true
 
   - type: brew
-    packages:
-      - gh
+    
     
 
   # STEP 4: Assets Mapping
