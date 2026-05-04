@@ -1,95 +1,73 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Final Guardian Workstation (SCX + ROCm + Ollama + Noctalia)
+description: The Final Guardian Workstation (ROCm + Ollama + Steam Fix)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Repo Configuration (RPM Fusion + Jailed Fallback Terra)
-  - type: script
-    snippets:
-      - |
-        set -ouex pipefail
-        # Install RPM Fusion
-        rpm-ostree install \
-            https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
-            https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-
-        # Jail the Terra Repo (Using F43 as a fallback to bypass the F44 404)
-        cat << 'EOF' > /etc/yum.repos.d/terra.repo
-        [terra]
-        name=Terra Fallback (F43)
-        baseurl=https://repos.fyralabs.com/terra43/$basearch/
-        enabled=1
-        gpgcheck=0
-        includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
-        EOF
-
-        # Disable Rawhide repos to prevent version drift
-        sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
-        sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
-
-  # STEP 2: The Core Desktop & Compute Suite
-  - type: rpm-ostree
+  # STEP 1: Using the New DNF Module for Repos & Core Packages
+  - type: dnf
     repos:
+      # RPM Fusion (Steam/Multimedia)
+      - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
+      - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+      # COPRs (Niri, Hyprland, Topgrade)
       - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-44/avengemedia-dms-fedora-44.repo
     install:
-      # Desktop & Schedulers
-      - plymouth-plugin-script
-      - scx-scheds
-      - scx-tools
-      - niri
-      - hyprland
-      - qtile-wayland
-      - dms
-      - topgrade
-      # ROCm Stack (For RX 6700 XT AI)
-      - rocm-hip
-      - rocm-opencl
-      - rocm-runtime
-      - rocm-smi
-      - rocminfo
-      - clinfo
-      # System Tools
-      - konsole
-      - fish
-      - neovim
-      - emacs-nox
-      - fastfetch
-      - btop
-      - nvtop
-      # Steam & 32-bit Doodoo
-      - steam
-      - mesa-dri-drivers.i686
-      - mesa-vulkan-drivers.i686
-      - vulkan-loader.i686
-      - glibc.i686
-      - ibus-gtk2.i686
+      packages:
+        # Gaming & Graphics (The Steam Fix)
+        - install-weak-deps: false
+          packages:
+            - steam
+            - mesa-dri-drivers.i686
+            - mesa-vulkan-drivers.i686
+            - vulkan-loader.i686
+            - glibc.i686
+            - ibus-gtk2.i686
+        # Core Desktop & Schedulers
+        - niri
+        - hyprland
+        - qtile-wayland
+        - scx-scheds
+        - scx-tools
+        - dms
+        - topgrade
+        # Compute Stack (RX 6700 XT AI)
+        - rocm-hip
+        - rocm-opencl
+        - rocm-runtime
+        - rocm-smi
+        - clinfo
+        - nvtop
+        # The Rest of the Den
+        - fish
+        - neovim
+        - emacs-nox
+        - fastfetch
+        - btop
+        - plymouth-plugin-script
 
-  # STEP 3: Automation & Customization
-  - type: chezmoi
-    repository: "https://github.com/timothybear11/ArtixDots"
-    all-users: true
-
-  - type: brew
-
-  # STEP 4: Assets Mapping
-  - type: files
-    files:
-      - source: system-fonts
-        destination: /usr/share/fonts/guardian-fonts
-      - source: etc/plymouth
-        destination: /etc/plymouth
-      - source: usr/share/plymouth/themes/guardian
-        destination: /usr/share/plymouth/themes/guardian
-
-  # STEP 5: Final Jails & Services
+  # STEP 2: Jailing Terra (Still needed to prevent system-wide drift)
   - type: script
     snippets:
-      # Sched-ext Service
+      - |
+        # Use the rolling path to avoid 404s
+        cat << 'EOF' > /etc/yum.repos.d/terra.repo
+        [terra]
+        name=Terra Rolling
+        baseurl=https://repos.fyralabs.com/terra/$basearch/
+        enabled=1
+        gpgcheck=0
+        includepkgs=noctalia-qs,noctalia-shell,quickshell
+        EOF
+
+  # STEP 3: Automation & Services (Ollama + Noctalia + Schedulers)
+  - type: script
+    snippets:
+      # Sched-ext: Rusty 5800X Optimization
       - |
         cat << 'EOF' > /etc/systemd/system/scx_rusty.service
         [Unit]
@@ -102,10 +80,9 @@ modules:
         [Install]
         WantedBy=multi-user.target
         EOF
-        systemctl disable scx_loader.service || true
         systemctl enable scx_rusty.service
 
-      # Ollama Engine Setup
+      # Ollama Engine
       - |
         curl -L https://ollama.com/download/ollama-linux-amd64.tar.gz | tar -xz -C /usr
         cat << 'EOF' > /etc/systemd/system/ollama.service
@@ -122,7 +99,7 @@ modules:
         EOF
         systemctl enable ollama.service
 
-      # Noctalia Shell Jail
+      # Noctalia Jail Extraction
       - |
         mkdir -p /usr/lib/noctalia
         dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch)
@@ -130,7 +107,7 @@ modules:
         mkdir -p /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
         curl -sL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
         tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
-        # Create Wrapper
+        # The Smart Wrapper
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
@@ -143,10 +120,16 @@ modules:
         EOF
         chmod +x /usr/bin/noctalia-qs
 
+  # STEP 4: Shell Configs & Homebrew
+  - type: chezmoi
+    repository: "https://github.com/timothybear11/ArtixDots"
+    all-users: true
+
+  - type: brew
+
   - type: os-release
     properties:
       NAME: Guardian OS
-      ID: guardian
       PRETTY_NAME: Guardian OS (Atomic)
 
   - type: initramfs
