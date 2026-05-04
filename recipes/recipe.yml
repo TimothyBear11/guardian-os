@@ -88,12 +88,25 @@ modules:
     snippets:
       - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
       - "plymouth-set-default-theme guardian"
-      # THE KCONFIG SYMLINK: Helps libbpf find the kernel map on Atomic/bootc systems
       - "ln -sf /lib/modules/$(uname -r)/config /boot/config-$(uname -r)"
-      # SETTING THE SCHEDULER: Switched from lavd to rusty for 6.19 stability
-      - "mkdir -p /etc/default && echo 'SCX_SCHEDULER=scx_rusty' > /etc/default/scx"
-      # THE HARD FIX: Attempt to enable scx or scx-loader, but don't fail the build if it's tricky
-      - "systemctl enable scx_loader.service || true"
+      # Create the direct Rusty service
+      - |
+        cat << 'EOF' > /etc/systemd/system/scx_rusty.service
+        [Unit]
+        Description=Sched-ext Rusty Scheduler
+        After=multi-user.target
+
+        [Service]
+        Type=simple
+        ExecStart=/usr/bin/scx_rusty
+        Restart=always
+
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+      # Cleanup the loader and enable the worker
+      - "systemctl disable scx_loader.service || true"
+      - "systemctl enable scx_rusty.service"
 
   - type: script
     snippets:
