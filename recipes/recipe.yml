@@ -49,6 +49,10 @@ modules:
       - jq
       - socat
       - polkit-kde
+      - sqlite
+      - playerctl
+      - libnotify
+      - network-manager-applet
 
   # STEP 3: Chezmoi
   - type: chezmoi
