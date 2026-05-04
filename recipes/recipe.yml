@@ -73,7 +73,6 @@ modules:
       - mesa-dri-drivers.i686
       - mesa-vulkan-drivers.i686
       - vulkan-loader.i686
-      - libva-mesa-driver.i686
       - glibc.i686
 
   # STEP 3: Chezmoi and homebrew
