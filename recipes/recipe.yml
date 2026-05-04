@@ -1,37 +1,36 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Final Guardian Workstation (ROCm + Ollama + Steam + Noctalia)
+description: Final Guardian Workstation (ROCm + Ollama + Terra Fallback)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Infrastructure Layer (The Repo "Keys to the Kingdom")
+  # STEP 1: Repo Setup & The "404 Bypass"
   - type: script
     snippets:
       - |
         set -ouex pipefail
-        # Properly install the RPM Fusion release packages so they extract their .repo files
+        # 1. Install RPM Fusion properly
         rpm-ostree install \
             https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
             https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
 
-        # Jail the Terra Repo manually to ensure it stays in its lane
+        # 2. THE FIX: Force Terra to use F43 until F44 is ready
         cat << 'EOF' > /etc/yum.repos.d/terra.repo
         [terra]
-        name=Terra Rolling
-        baseurl=https://repos.fyralabs.com/terra/$basearch/
+        name=Terra Fallback (F43)
+        baseurl=https://repos.fyralabs.com/terra43/$basearch/
         enabled=1
         gpgcheck=0
-        includepkgs=noctalia-qs,noctalia-shell,quickshell
+        # Give permission for these specific packages to be seen
+        includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
         EOF
 
-  # STEP 2: The DNF Module (The "Solver" Layer)
+  # STEP 2: The DNF Solver (Now with working repos)
   - type: dnf
     repos:
-      # We only use 'files' for the actual .repo TEXT file from Negativo17
       files:
         - https://negativo17.org/repos/fedora-steam.repo
-      # Use the 'copr' key for a clean, schema-correct list
       copr:
         - yalter/niri
         - lionheartp/Hyprland
@@ -40,22 +39,21 @@ modules:
     install:
       install-weak-deps: false
       packages:
-        # Gaming & GPU Compute (6700 XT Support)
+        # Gaming & GPU (RX 6700 XT)
         - steam
-        - kernel-modules-extra
         - rocm-hip
         - rocm-opencl
         - rocm-runtime
         - rocm-smi
         - clinfo
         - nvtop
-        # 32-bit dependencies (Resolved via Negativo17/RPM Fusion)
+        # 32-bit Doodoo
         - mesa-dri-drivers.i686
         - mesa-vulkan-drivers.i686
         - vulkan-loader.i686
         - glibc.i686
         - ibus-gtk2.i686
-        # Workstation & Desktop Suites
+        # Performance & Desktop (Found via Terra F43 + COPR)
         - niri
         - hyprland
         - qtile-wayland
@@ -63,6 +61,7 @@ modules:
         - scx-tools
         - dms
         - topgrade
+        # Den Essentials
         - fish
         - neovim
         - emacs-nox
@@ -70,10 +69,10 @@ modules:
         - btop
         - plymouth-plugin-script
 
-  # STEP 3: Services & AI (The "Brain" Layer)
+  # STEP 3: Assets, AI, & System Services
   - type: script
     snippets:
-      # Sched-ext: Optimized for your Ryzen 5800X
+      # Sched-ext: Rusty 5800X Optimization
       - |
         cat << 'EOF' > /etc/systemd/system/scx_rusty.service
         [Unit]
@@ -88,7 +87,7 @@ modules:
         EOF
         systemctl enable scx_rusty.service
 
-      # Ollama Engine Setup (Natively in /usr for Atomic permanence)
+      # Ollama Engine Setup
       - |
         curl -L https://ollama.com/download/ollama-linux-amd64.tar.gz | tar -xz -C /usr
         cat << 'EOF' > /etc/systemd/system/ollama.service
@@ -105,7 +104,7 @@ modules:
         EOF
         systemctl enable ollama.service
 
-      # Noctalia Shell Jail Logic (Correct path mapping)
+      # Noctalia Shell Assets (Jail Logic)
       - |
         mkdir -p /usr/lib/noctalia
         dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch)
@@ -113,7 +112,7 @@ modules:
         mkdir -p /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
         curl -sL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
         tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
-        # The Absolute Wrapper
+        # Create Wrapper
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
@@ -126,7 +125,7 @@ modules:
         EOF
         chmod +x /usr/bin/noctalia-qs
 
-  # STEP 4: Homebrew & Dots
+  # STEP 4: Configuration & Dots
   - type: chezmoi
     repository: "https://github.com/timothybear11/ArtixDots"
     all-users: true
