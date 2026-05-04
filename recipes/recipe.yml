@@ -65,8 +65,7 @@ modules:
     all-users: true
 
   - type: homebrew
-    packages:
-      - gh
+    
 
   # STEP 4: Assets Mapping
   - type: files
