@@ -54,7 +54,7 @@ modules:
         - qtile-wayland
         - scx-scheds
         - scx-tools
-        - noctalia-shekk
+        - noctalia-shell
         - topgrade
         # Den Essentials
         - fish
