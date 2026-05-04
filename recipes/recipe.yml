@@ -234,11 +234,6 @@ modules:
 
   - type: brew
 
-  # STEP: System Clean-up (Notification Daemon Conflict Resolution)
-  - type: script
-    snippets:
-      - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
-
   # STEP: Assets Mapping (Fonts & Plymouth)
   - type: files
     files:
@@ -249,13 +244,16 @@ modules:
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
 
+  # STEP: System Clean-up (Notification Daemon Conflict Resolution)
+  - type: script
+    snippets:
+      - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
+      - "plymouth-set-default-theme guardian"
+
   # STEP 4: Branding
   - type: os-release
     properties:
       NAME: Guardian OS
       PRETTY_NAME: Guardian OS (Atomic)
-
-  - type: plymouth
-    theme: guardian
 
   - type: initramfs
