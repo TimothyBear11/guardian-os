@@ -5,56 +5,17 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Repository & Package Management (Schema-Matched DNF)
-  - type: dnf
-    repos:
-      # Matches #/$defs/DnfRepo/properties/files
-      files:
-        - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
-        - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-        - https://negativo17.org/repos/fedora-steam.repo
-        - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
-        - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
-        - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
-        - https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-44/avengemedia-dms-fedora-44.repo
-    install:
-      # Matches #/$defs/DnfInstall properties (sibling to packages)
-      install-weak-deps: false
-      packages:
-        # Gaming & GPU Compute (RX 6700 XT)
-        - steam
-        - kernel-modules-extra
-        - mesa-dri-drivers.i686
-        - mesa-vulkan-drivers.i686
-        - vulkan-loader.i686
-        - glibc.i686
-        - ibus-gtk2.i686
-        - rocm-hip
-        - rocm-opencl
-        - rocm-runtime
-        - rocm-smi
-        - clinfo
-        - nvtop
-        # Desktop Environments & Schedulers
-        - niri
-        - hyprland
-        - qtile-wayland
-        - scx-scheds
-        - scx-tools
-        - dms
-        - topgrade
-        # Essential Den Tools
-        - fish
-        - neovim
-        - emacs-nox
-        - fastfetch
-        - btop
-        - plymouth-plugin-script
-
-  # STEP 2: Jailing Terra (Custom Repo File via Script)
+  # STEP 1: Infrastructure Layer (The Repo "Keys to the Kingdom")
   - type: script
     snippets:
       - |
+        set -ouex pipefail
+        # Properly install the RPM Fusion release packages so they extract their .repo files
+        rpm-ostree install \
+            https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
+            https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+
+        # Jail the Terra Repo manually to ensure it stays in its lane
         cat << 'EOF' > /etc/yum.repos.d/terra.repo
         [terra]
         name=Terra Rolling
@@ -64,10 +25,55 @@ modules:
         includepkgs=noctalia-qs,noctalia-shell,quickshell
         EOF
 
-  # STEP 3: Services (Schedulers + Ollama + Noctalia Jail)
+  # STEP 2: The DNF Module (The "Solver" Layer)
+  - type: dnf
+    repos:
+      # We only use 'files' for the actual .repo TEXT file from Negativo17
+      files:
+        - https://negativo17.org/repos/fedora-steam.repo
+      # Use the 'copr' key for a clean, schema-correct list
+      copr:
+        - yalter/niri
+        - lionheartp/Hyprland
+        - lilay/topgrade
+        - avengemedia/dms
+    install:
+      install-weak-deps: false
+      packages:
+        # Gaming & GPU Compute (6700 XT Support)
+        - steam
+        - kernel-modules-extra
+        - rocm-hip
+        - rocm-opencl
+        - rocm-runtime
+        - rocm-smi
+        - clinfo
+        - nvtop
+        # 32-bit dependencies (Resolved via Negativo17/RPM Fusion)
+        - mesa-dri-drivers.i686
+        - mesa-vulkan-drivers.i686
+        - vulkan-loader.i686
+        - glibc.i686
+        - ibus-gtk2.i686
+        # Workstation & Desktop Suites
+        - niri
+        - hyprland
+        - qtile-wayland
+        - scx-scheds
+        - scx-tools
+        - dms
+        - topgrade
+        - fish
+        - neovim
+        - emacs-nox
+        - fastfetch
+        - btop
+        - plymouth-plugin-script
+
+  # STEP 3: Services & AI (The "Brain" Layer)
   - type: script
     snippets:
-      # Sched-ext: Rusty 5800X Optimization
+      # Sched-ext: Optimized for your Ryzen 5800X
       - |
         cat << 'EOF' > /etc/systemd/system/scx_rusty.service
         [Unit]
@@ -82,7 +88,7 @@ modules:
         EOF
         systemctl enable scx_rusty.service
 
-      # Ollama Engine Setup
+      # Ollama Engine Setup (Natively in /usr for Atomic permanence)
       - |
         curl -L https://ollama.com/download/ollama-linux-amd64.tar.gz | tar -xz -C /usr
         cat << 'EOF' > /etc/systemd/system/ollama.service
@@ -99,7 +105,7 @@ modules:
         EOF
         systemctl enable ollama.service
 
-      # Noctalia Shell Extraction
+      # Noctalia Shell Jail Logic (Correct path mapping)
       - |
         mkdir -p /usr/lib/noctalia
         dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch)
@@ -107,7 +113,7 @@ modules:
         mkdir -p /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
         curl -sL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
         tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
-        # Create the Wrapper
+        # The Absolute Wrapper
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
