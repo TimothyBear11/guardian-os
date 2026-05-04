@@ -94,6 +94,7 @@ modules:
         - qt6-qtsvg
         - qt6-qtmultimedia
         - tmux
+        - pipx
 
   # STEP 2: Terra Repository & System Services
   - type: script
