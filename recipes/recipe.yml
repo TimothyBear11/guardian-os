@@ -95,6 +95,16 @@ modules:
         - qt6-qtmultimedia
         - tmux
 
+  - type: rpm-ostree
+    install:
+      - kernel-cachyos
+    remove:
+      - kernel
+      - kernel-core
+      - kernel-modules
+      - kernel-modules-core
+      - kernel-modules-extra
+
   # STEP 2: Terra Repository & System Services
   - type: script
     snippets:
