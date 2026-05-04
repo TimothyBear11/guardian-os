@@ -5,32 +5,14 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Repo Setup & The "404 Bypass"
-  - type: script
-    snippets:
-      - |
-        set -ouex pipefail
-        # 1. Install RPM Fusion properly
-        rpm-ostree install \
-            https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
-            https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-
-        # 2. THE FIX: Force Terra to use F43 until F44 is ready
-        cat << 'EOF' > /etc/yum.repos.d/terra.repo
-        [terra]
-        name=Terra Fallback (F43)
-        baseurl=https://repos.fyralabs.com/terra43/$basearch/
-        enabled=1
-        gpgcheck=0
-        # Give permission for these specific packages to be seen
-        includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
-        EOF
-
   # STEP 2: The DNF Solver (Now with working repos)
   - type: dnf
     repos:
       files:
+        - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
+        - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
         - https://negativo17.org/repos/fedora-steam.repo
+        - https://repos.fyralabs.com/terra44/fedora-44/terra44.repo
       copr:
         - yalter/niri
         - lionheartp/Hyprland
@@ -41,6 +23,9 @@ modules:
     install:
       install-weak-deps: false
       packages:
+        # Kernel (replaces default Fedora kernel)
+        - kernel-cachyos
+        - kernel-cachyos-devel-matched
         # Gaming & GPU (RX 6700 XT)
         - steam
         - rocm-hip
