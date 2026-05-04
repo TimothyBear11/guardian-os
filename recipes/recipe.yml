@@ -95,7 +95,8 @@ modules:
       # Ollama Engine Setup
       - |
         set -euo pipefail
-        curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst | tar -x -C /usr
+        curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst \
+            | sudo tar x -C /usr
         cat << 'EOF' > /etc/systemd/system/ollama.service
         [Unit]
         Description=Ollama Service
