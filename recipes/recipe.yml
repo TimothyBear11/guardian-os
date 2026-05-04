@@ -15,21 +15,22 @@ modules:
             https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
             https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
 
-        # Jail the Terra Repo (Using the rolling 'terra' path instead of 'terra44')
+        # Jail the Terra Repo (Using the new GPG key URL)
         cat << 'EOF' > /etc/yum.repos.d/terra.repo
         [terra]
         name=Terra Rolling
-        # We use 'terra' instead of 'terra$releasever' to avoid the 404
         baseurl=https://repos.fyralabs.com/terra/$basearch/
-        enabled=1
-        gpgcheck=1
-        gpgkey=https://repos.fyralabs.com/terra/key.asc
-        includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
-        EOF
+          enabled=1
+          gpgcheck=1
+          # This is the updated key location for 2026
+          gpgkey=https://repo.terra.fyralabs.com/RPM-GPG-KEY-terra
+          # ONLY allow Terra to provide these specific packages
+          includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
+          EOF
 
-        # Disable Rawhide repos
-        sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
-        sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
+          # Disable Rawhide repos
+          sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
+          sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
   # STEP 2: The Core Desktop & Wizard Suite
   - type: rpm-ostree
@@ -145,15 +146,12 @@ modules:
         # 1. Prepare Jail
         mkdir -p /usr/lib/noctalia
         rm -rf /usr/lib/noctalia/*
-        cd /tmp
 
-        # 2. Get the ENGINE from Terra (Stable)
-        curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo -o /etc/yum.repos.d/terra.repo
-        dnf download -y noctalia-qs --arch=$(arch) --releasever=44
-        rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
+        # 2. Get the ENGINE (We use the repo we already configured in Step 1!)
+        dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch)
+        rpm2cpio /tmp/noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
 
         # 3. Get the SHELL from GitHub (Bleeding Edge)
-        # We put it in the same share folder the engine expects
         mkdir -p /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
         curl -sL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
         tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
