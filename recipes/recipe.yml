@@ -50,6 +50,7 @@ modules:
         # Performance & Desktop (Found via Terra F44 + COPR)
         - niri
         - hyprland
+        - hyprland-guiutils
         - qtile-wayland
         - scx-scheds
         - scx-tools
@@ -64,6 +65,29 @@ modules:
         - plymouth-plugin-script
         - konsole
         - dolphin
+        # Got Lost
+        - xdg-desktop-portal
+        - xdg-desktop-portal-hyprland
+        - xdg-desktop-portal-gtk
+        - qtile-extras
+        - gamescope
+        - mangohud
+        - ripgrep
+        - fd-find
+        - git
+        - jq
+        - socat
+        - polkit-kde
+        - sqlite
+        - playerctl
+        - libnotify
+        - network-manager-applet
+        - distrobox
+        - mpv
+        - pciutils
+        - mangowm
+        - kitty
+        - gamemode
 
   # STEP 2: Terra Repository & System Services
   - type: script
@@ -151,13 +175,42 @@ modules:
         #!/bin/bash
         # Noctalia QuickShell wrapper - used by both noctalia and dms
         export QML2_IMPORT_PATH="/usr/lib/noctalia/usr/lib64/qt6/qml:${QML2_IMPORT_PATH:-}"
-        export QUICKSHELL_SHELL_PATH="/usr/lib/noctalia/usr/share/quickshell/shells"
+        TARGET_PATH="/usr/lib/noctalia/usr/share/quickshell/shells/noctalia"
 
-        if [[ "${*}" =~ (-c|--config) ]]; then
-            exec /usr/lib/noctalia/usr/bin/qs "$@"
-        else
-            exec /usr/lib/noctalia/usr/bin/qs -c noctalia "$@"
+        has_target=0
+        args=()
+
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                -c|--config)
+                    has_target=1
+                    # Intercept noctalia calls and reroute to absolute path
+                    if [[ "$2" == "noctalia" || "$2" == "noctalia-shell" ]]; then
+                        args+=("-p" "$TARGET_PATH")
+                        shift 2
+                    else
+                        args+=("$1" "$2")
+                        shift 2
+                    fi
+                    ;;
+                -p|--path)
+                    has_target=1
+                    args+=("$1" "$2")
+                    shift 2
+                    ;;
+                *)
+                    args+=("$1")
+                    shift 1
+                    ;;
+            esac
+        done
+
+        # Default to noctalia if no specific config/path is requested
+        if [[ $has_target -eq 0 ]]; then
+            args+=("-p" "$TARGET_PATH")
         fi
+
+        exec /usr/lib/noctalia/usr/bin/qs "${args[@]}"
         WRAPPER
         chmod +x /usr/bin/noctalia-qs
 
@@ -181,10 +234,28 @@ modules:
 
   - type: brew
 
+  # STEP: System Clean-up (Notification Daemon Conflict Resolution)
+  - type: script
+    snippets:
+      - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
+
+  # STEP: Assets Mapping (Fonts & Plymouth)
+  - type: files
+    files:
+      - source: system-fonts
+        destination: /usr/share/fonts/guardian-fonts
+      - source: etc/plymouth
+        destination: /etc/plymouth
+      - source: usr/share/plymouth/themes/guardian
+        destination: /usr/share/plymouth/themes/guardian
+
   # STEP 4: Branding
   - type: os-release
     properties:
       NAME: Guardian OS
       PRETTY_NAME: Guardian OS (Atomic)
+
+  - type: plymouth
+    theme: guardian
 
   - type: initramfs
