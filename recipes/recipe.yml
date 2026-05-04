@@ -23,7 +23,7 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
-      - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos-addons/repo/fedora-44/bieszczaders-kernel-cachyos-addons-fedora-44.repo
+      - https://https://copr.fedorainfracloud.org/coprs/avengemedia/dms/
     install:
       - plymouth-plugin-script
       - scx-scheds           
@@ -35,6 +35,7 @@ modules:
       - qtile-wayland
       - qtile-extras
       - noctalia-shell
+      - dms
       - topgrade
       - gamescope
       - mangohud
