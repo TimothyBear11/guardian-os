@@ -34,7 +34,6 @@ modules:
       - hyprland-guiutils
       - qtile-wayland
       - qtile-extras
-      - noctalia-shell
       - dms
       - topgrade
       - gamescope
@@ -59,6 +58,29 @@ modules:
       - mpv
       - fastfetch
       - pciutils
+      - tmux
+
+  - type: script
+    scripts:
+      - |
+        # MANUALLY INSTALL NOCTALIA TO AVOID RPM CONFLICTS
+        # We download and extract the RPM to a custom path (/opt/noctalia)
+        # so it doesn't clash with the system's /usr/lib64/qt6/qml/Quickshell
+        mkdir -p /opt/noctalia
+        cd /tmp
+        # Fetching the specific F44 Noctalia RPM
+        dnf download noctalia-qs --releasever=44
+        # Extract the files into our private /opt folder
+        rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /opt/noctalia
+        
+        # Create a wrapper script so 'noctalia-qs' works from anywhere
+        # This wrapper tells Noctalia to look in /opt for its QML modules
+        cat << 'EOF' > /usr/bin/noctalia-qs
+        #!/bin/bash
+        export QML2_IMPORT_PATH=/opt/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
+        exec /opt/noctalia/usr/bin/quickshell "$@"
+        EOF
+        chmod +x /usr/bin/noctalia-qs 
 
   # STEP 3: Chezmoi and homebrew
   - type: chezmoi
