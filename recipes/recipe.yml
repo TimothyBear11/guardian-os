@@ -63,6 +63,7 @@ modules:
       - gcc-c++
       - cpio
       - pkgconf-pkg-config
+      - btop
 
   # STEP 3: Chezmoi and homebrew
   - type: chezmoi
