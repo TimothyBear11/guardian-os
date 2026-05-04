@@ -101,25 +101,31 @@ modules:
   - type: script
     snippets:
       - |
-        # 1. Prepare a persistent home in /usr
+        # 1. Prepare the persistent home and clean up the old attempt
         mkdir -p /usr/lib/noctalia
+        rm -rf /usr/lib/noctalia/*
         cd /tmp
 
-        # 2. Grab the package
-        dnf install -y 'dnf-command(copr)'
-        dnf copr enable -y avengemedia/quickshell
-        dnf download noctalia-qs --releasever=44
+        # 2. Enable the Terra Repo (The correct home for noctalia-qs)
+        # Since you're on a bootc/Atomic-style build, we'll pull the repo file directly
+        curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo -o /etc/yum.repos.d/terra.repo
 
-        # 3. Extract to /usr/lib instead of /opt
+        # 3. Download the BINARY package
+        # We use --arch to be safe and ensure we aren't getting the .src.rpm again
+        dnf download -y noctalia-qs --arch=$(arch) --releasever=44
+
+        # 4. Extract the binary hierarchy into our subfolder
+        # This will create /usr/lib/noctalia/usr/bin/qs (note the binary name is 'qs')
         rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
 
-        # 4. Update the wrapper to the new home
+        # 5. Update the wrapper with the correct binary name ('qs')
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
+        # Note: noctalia-qs provides the binary as 'qs', not 'quickshell'
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
-        # We point directly to the binary in its new persistent home
-        exec /usr/lib/noctalia/usr/bin/quickshell "$@"
+        exec /usr/lib/noctalia/usr/bin/qs "$@"
         EOF
+
         chmod +x /usr/bin/noctalia-qs
 
   # STEP 6: Branding
