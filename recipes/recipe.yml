@@ -96,17 +96,24 @@ modules:
   - type: script
     snippets:
       - |
-        mkdir -p /opt/noctalia
+        # 1. Prepare a persistent home in /usr
+        mkdir -p /usr/lib/noctalia
         cd /tmp
-        dnf download noctalia-qs --releasever=44
-        rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /opt/noctalia
 
-        # Create a wrapper script so 'noctalia-qs' works from anywhere
-        # This wrapper tells Noctalia to look in /opt for its QML modules
+        # 2. Grab the package
+        dnf install -y 'dnf-command(copr)'
+        dnf copr enable -y avengemedia/quickshell
+        dnf download noctalia-qs --releasever=44
+
+        # 3. Extract to /usr/lib instead of /opt
+        rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
+
+        # 4. Update the wrapper to the new home
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
-        export QML2_IMPORT_PATH=/opt/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
-        exec /opt/noctalia/usr/bin/quickshell "$@"
+        export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
+        # We point directly to the binary in its new persistent home
+        exec /usr/lib/noctalia/usr/bin/quickshell "$@"
         EOF
         chmod +x /usr/bin/noctalia-qs
 
