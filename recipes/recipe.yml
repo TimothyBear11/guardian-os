@@ -118,38 +118,32 @@ modules:
   - type: script
     snippets:
       - |
-        # 1. Prepare and clean the jail
+        # 1. Prepare Jail
         mkdir -p /usr/lib/noctalia
         rm -rf /usr/lib/noctalia/*
         cd /tmp
 
-        # 2. Grab BOTH engine and shell from Terra
+        # 2. Get the ENGINE from Terra (Stable)
         curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo -o /etc/yum.repos.d/terra.repo
-        dnf download -y noctalia-qs noctalia-shell --arch=$(arch) --releasever=44
+        dnf download -y noctalia-qs --arch=$(arch) --releasever=44
+        rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
 
-        # 3. Extract everything (using a loop to avoid fish wildcard issues)
-        for rpm in noctalia-qs*.rpm noctalia-shell*.rpm; do
-            [ -f "$rpm" ] && rpm2cpio "$rpm" | cpio -idmv -D /usr/lib/noctalia
-        done
+        # 3. Get the SHELL from GitHub (Bleeding Edge)
+        # We put it in the same share folder the engine expects
+        mkdir -p /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
+        curl -sL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
+        tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
 
-        # 4. Create a smarter wrapper
+        # 4. The Wrapper (Absolute Path)
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
-        # 1. Tell Quickshell where its custom libraries are
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
-
-        # 2. Add our internal share to the shell search path
-        export QUICKSHELL_SHELL_PATH=/usr/lib/noctalia/usr/share/quickshell/shells:$QUICKSHELL_SHELL_PATH
-
-        # 3. Logic: If the user provides a config (-c or --config), just pass everything through.
-        # Otherwise, default to the internal noctalia-shell.
         if [[ "$*" == *"-c"* ]] || [[ "$*" == *"--config"* ]]; then
             exec /usr/lib/noctalia/usr/bin/qs "$@"
         else
-            exec /usr/lib/noctalia/usr/bin/qs -c noctalia-shell "$@"
+            exec /usr/lib/noctalia/usr/bin/qs -c /usr/lib/noctalia/usr/share/quickshell/shells/noctalia/shell.qml "$@"
         fi
         EOF
-
         chmod +x /usr/bin/noctalia-qs
 
   # STEP 6: Branding
