@@ -33,9 +33,6 @@ modules:
         # RPMFusion repos (enables free & nonfree packages)
         - rpmfusion-free-release
         - rpmfusion-nonfree-release
-        # Kernel (replaces default Fedora kernel)
-        - kernel-cachyos
-        - kernel-cachyos-devel-matched
         # Gaming & GPU (RX 6700 XT)
         - steam
         - rocm-hip
