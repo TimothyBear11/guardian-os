@@ -5,14 +5,29 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: RPM Fusion Fix
+  # STEP 1: Repo Configuration (RPM Fusion + Jailed Terra)
   - type: script
     snippets:
       - |
         set -ouex pipefail
+        # Install RPM Fusion
         rpm-ostree install \
             https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
             https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+
+        # Jail the Terra Repo so it doesn't break Steam/IBus
+        cat << 'EOF' > /etc/yum.repos.d/terra.repo
+        [terra]
+        name=Terra $releasever
+        baseurl=https://repos.fyralabs.com/terra$releasever/$basearch/
+        enabled=1
+        gpgcheck=1
+        gpgkey=https://repos.fyralabs.com/terra$releasever/key.asc
+        # ONLY allow Terra to provide these specific packages
+        includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
+        EOF
+
+        # Disable Rawhide repos
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
