@@ -34,7 +34,6 @@ modules:
   # STEP 2: The Core Desktop & Wizard Suite
   - type: rpm-ostree
     repos:
-      - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lionheartp/Hyprland/repo/fedora-44/lionheartp-Hyprland-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
@@ -89,6 +88,7 @@ modules:
       - mesa-vulkan-drivers.i686
       - vulkan-loader.i686
       - glibc.i686
+      - ibus-gtk2.i686
 
   # STEP 3: Chezmoi and homebrew
   - type: chezmoi
