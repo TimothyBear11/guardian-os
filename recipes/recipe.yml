@@ -141,11 +141,19 @@ modules:
         # 4. The Wrapper (Absolute Path)
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
+        # 1. Tell the engine where the libraries are
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
+
+        # 2. Tell the engine that our jail is a valid place to find shells
+        export QUICKSHELL_SHELL_PATH=/usr/lib/noctalia/usr/share/quickshell/shells
+
+        # 3. Execution logic
         if [[ "$*" == *"-c"* ]] || [[ "$*" == *"--config"* ]]; then
+            # Use the user's provided config path
             exec /usr/lib/noctalia/usr/bin/qs "$@"
         else
-            exec /usr/lib/noctalia/usr/bin/qs -c /usr/lib/noctalia/usr/share/quickshell/shells/noctalia/shell.qml "$@"
+            # Automatically load the 'noctalia' shell from our jail
+            exec /usr/lib/noctalia/usr/bin/qs -c noctalia "$@"
         fi
         EOF
         chmod +x /usr/bin/noctalia-qs
