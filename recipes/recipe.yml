@@ -99,7 +99,11 @@ modules:
   - type: os-release
     properties:
       NAME: Guardian OS
-      ID: guardian_os
+      ID: guardian
+      ID_LIKE: fedora
+      PRETTY_NAME: Guardian OS (Atomic)
+      VARIANT: Guardian Edition
       VARIANT_ID: cosmic
+      HOME_URL: "https://github.com/timothybear11/dotfiles"
 
   - type: initramfs
