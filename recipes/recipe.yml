@@ -1,11 +1,11 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
-description: The Final Guardian Workstation (SCX Hard-Fix + Emacs)
+description: The Final Guardian Workstation (SCX + ROCm + Ollama + Noctalia)
 base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Repo Configuration (RPM Fusion + Jailed Terra)
+  # STEP 1: Repo Configuration (RPM Fusion + Jailed Fallback Terra)
   - type: script
     snippets:
       - |
@@ -15,21 +15,21 @@ modules:
             https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
             https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
 
-        # Jail the Terra Repo (Indented so YAML knows it's part of the script)
+        # Jail the Terra Repo (Using F43 as a fallback to bypass the F44 404)
         cat << 'EOF' > /etc/yum.repos.d/terra.repo
         [terra]
-        name=Terra Rolling
-        baseurl=https://repos.fyralabs.com/terra/$basearch/
+        name=Terra Fallback (F43)
+        baseurl=https://repos.fyralabs.com/terra43/$basearch/
         enabled=1
         gpgcheck=0
         includepkgs=noctalia-qs,noctalia-shell,quickshell,scx-scheds,scx-tools
         EOF
 
-        # Disable Rawhide repos
+        # Disable Rawhide repos to prevent version drift
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-free-rawhide.repo || true
         sed -i 's/enabled=1/enabled=0/' /etc/yum.repos.d/rpmfusion-nonfree-rawhide.repo || true
 
-  # STEP 2: The Core Desktop & Wizard Suite
+  # STEP 2: The Core Desktop & Compute Suite
   - type: rpm-ostree
     repos:
       - https://copr.fedorainfracloud.org/coprs/yalter/niri/repo/fedora-44/yalter-niri-fedora-44.repo
@@ -37,50 +37,31 @@ modules:
       - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
       - https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-44/avengemedia-dms-fedora-44.repo
     install:
+      # Desktop & Schedulers
       - plymouth-plugin-script
       - scx-scheds
       - scx-tools
-      - mangowm
       - niri
       - hyprland
-      - hyprland-guiutils
       - qtile-wayland
-      - qtile-extras
       - dms
       - topgrade
-      - gamescope
-      - mangohud
+      # ROCm Stack (For RX 6700 XT AI)
+      - rocm-hip
+      - rocm-opencl
+      - rocm-runtime
+      - rocm-smi
+      - rocminfo
+      - clinfo
+      # System Tools
       - konsole
       - fish
       - neovim
       - emacs-nox
-      - ripgrep
-      - fd-find
-      - git
-      - xdg-desktop-portal
-      - xdg-desktop-portal-hyprland
-      - xdg-desktop-portal-gtk
-      - jq
-      - socat
-      - polkit-kde
-      - sqlite
-      - playerctl
-      - libnotify
-      - network-manager-applet
-      - distrobox
-      - mpv
       - fastfetch
-      - pciutils
-      - tmux
-      - cmake
-      - gcc-c++
-      - cpio
-      - pkgconf-pkg-config
       - btop
-      - ddcutil
-      - cliphist
-      - wlsunset
-      - brightnessctl
+      - nvtop
+      # Steam & 32-bit Doodoo
       - steam
       - mesa-dri-drivers.i686
       - mesa-vulkan-drivers.i686
@@ -88,7 +69,7 @@ modules:
       - glibc.i686
       - ibus-gtk2.i686
 
-  # STEP 3: Chezmoi and homebrew
+  # STEP 3: Automation & Customization
   - type: chezmoi
     repository: "https://github.com/timothybear11/ArtixDots"
     all-users: true
@@ -105,83 +86,67 @@ modules:
       - source: usr/share/plymouth/themes/guardian
         destination: /usr/share/plymouth/themes/guardian
 
-  # STEP 5: System Config & Service Fix
+  # STEP 5: Final Jails & Services
   - type: script
     snippets:
-      - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
-      - "plymouth-set-default-theme guardian"
-      - "ln -sf /lib/modules/$(uname -r)/config /boot/config-$(uname -r)"
-      # Create the direct Rusty service
+      # Sched-ext Service
       - |
         cat << 'EOF' > /etc/systemd/system/scx_rusty.service
         [Unit]
         Description=Sched-ext Rusty Scheduler
         After=multi-user.target
-
         [Service]
         Type=simple
         ExecStart=/usr/bin/scx_rusty
         Restart=always
-
         [Install]
         WantedBy=multi-user.target
         EOF
-      # Cleanup the loader and enable the worker
-      - "systemctl disable scx_loader.service || true"
-      - "systemctl enable scx_rusty.service"
+        systemctl disable scx_loader.service || true
+        systemctl enable scx_rusty.service
 
-  - type: script
-    snippets:
+      # Ollama Engine Setup
       - |
-        # Enable DMS specifically for the Niri session globally
-        mkdir -p /usr/lib/systemd/user/niri.service.wants
-        ln -s /usr/lib/systemd/user/dms.service /usr/lib/systemd/user/niri.service.wants/dms.service
+        curl -L https://ollama.com/download/ollama-linux-amd64.tar.gz | tar -xz -C /usr
+        cat << 'EOF' > /etc/systemd/system/ollama.service
+        [Unit]
+        Description=Ollama Service
+        After=network-online.target
+        [Service]
+        ExecStart=/usr/bin/ollama serve
+        User=root
+        Restart=always
+        Environment="OLLAMA_HOST=0.0.0.0"
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+        systemctl enable ollama.service
 
-  - type: script
-    snippets:
+      # Noctalia Shell Jail
       - |
-        # 1. Prepare Jail
         mkdir -p /usr/lib/noctalia
-        rm -rf /usr/lib/noctalia/*
-
-        # 2. Get the ENGINE (We use the repo we already configured in Step 1!)
         dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch)
         rpm2cpio /tmp/noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
-
-        # 3. Get the SHELL from GitHub (Bleeding Edge)
         mkdir -p /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
         curl -sL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
         tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
-
-        # 4. The Wrapper (Absolute Path)
+        # Create Wrapper
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
-        # 1. Tell the engine where the libraries are
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
-
-        # 2. Tell the engine that our jail is a valid place to find shells
         export QUICKSHELL_SHELL_PATH=/usr/lib/noctalia/usr/share/quickshell/shells
-
-        # 3. Execution logic
         if [[ "$*" == *"-c"* ]] || [[ "$*" == *"--config"* ]]; then
-            # Use the user's provided config path
             exec /usr/lib/noctalia/usr/bin/qs "$@"
         else
-            # Automatically load the 'noctalia' shell from our jail
             exec /usr/lib/noctalia/usr/bin/qs -c noctalia "$@"
         fi
         EOF
         chmod +x /usr/bin/noctalia-qs
 
-  # STEP 6: Branding
   - type: os-release
     properties:
       NAME: Guardian OS
       ID: guardian
-      ID_LIKE: fedora
       PRETTY_NAME: Guardian OS (Atomic)
-      VARIANT: Guardian Edition
-      VARIANT_ID: cosmic
-      HOME_URL: "https://github.com/timothybear11/guardian-os"
 
   - type: initramfs
