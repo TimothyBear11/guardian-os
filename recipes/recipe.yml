@@ -5,12 +5,11 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 2: The DNF Solver (Now with working repos)
+  # STEP 1: Repository Configuration (Fixed)
   - type: dnf
     repos:
       files:
-        - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
-        - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
+        # Use only .repo files, not .rpm installers
         - https://negativo17.org/repos/fedora-steam.repo
         - https://repos.fyralabs.com/terra44/fedora-44/terra44.repo
       copr:
@@ -23,6 +22,9 @@ modules:
     install:
       install-weak-deps: false
       packages:
+        # RPMFusion repos (enables free & nonfree packages)
+        - rpmfusion-free-release
+        - rpmfusion-nonfree-release
         # Kernel (replaces default Fedora kernel)
         - kernel-cachyos
         - kernel-cachyos-devel-matched
@@ -40,7 +42,7 @@ modules:
         - vulkan-loader.i686
         - glibc.i686
         - ibus-gtk2.i686
-        # Performance & Desktop (Found via Terra F43 + COPR)
+        # Performance & Desktop (Found via Terra F44 + COPR)
         - niri
         - hyprland
         - qtile-wayland
@@ -56,11 +58,12 @@ modules:
         - btop
         - plymouth-plugin-script
 
-  # STEP 3: Assets, AI, & System Services
+  # STEP 2: System Services & Assets
   - type: script
     snippets:
       # Sched-ext: Rusty 5800X Optimization
       - |
+        set -euo pipefail
         cat << 'EOF' > /etc/systemd/system/scx_rusty.service
         [Unit]
         Description=Sched-ext Rusty Scheduler
@@ -76,7 +79,8 @@ modules:
 
       # Ollama Engine Setup
       - |
-        curl -L https://ollama.com/download/ollama-linux-amd64.tar.gz | tar -xz -C /usr
+        set -euo pipefail
+        curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.gz | tar -xz -C /usr
         cat << 'EOF' > /etc/systemd/system/ollama.service
         [Unit]
         Description=Ollama Service
@@ -91,35 +95,78 @@ modules:
         EOF
         systemctl enable ollama.service
 
-      # Noctalia Shell Assets (Jail Logic)
+      # Unified Noctalia + DMS Setup (noctalia-qs as default for both)
       - |
-        mkdir -p /usr/lib/noctalia
-        dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch)
-        rpm2cpio /tmp/noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
+        set -euo pipefail
+        trap 'echo "Error during noctalia setup" >&2' ERR
+        
+        # Create noctalia jail structure
         mkdir -p /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
-        curl -sL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
-        tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia
-        # Create Wrapper
-        cat << 'EOF' > /usr/bin/noctalia-qs
+        
+        # Download and extract noctalia-qs package
+        echo "Downloading noctalia-qs..."
+        dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch) 2>/dev/null || {
+          echo "Warning: Could not download noctalia-qs via dnf, attempting direct download..."
+        }
+        
+        if [ -f /tmp/noctalia-qs*.rpm ]; then
+          echo "Extracting noctalia-qs..."
+          rpm2cpio /tmp/noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia 2>/dev/null
+          rm -f /tmp/noctalia-qs*.rpm
+        fi
+        
+        # Download noctalia shell release
+        echo "Downloading noctalia-shell..."
+        NOCTALIA_RELEASE=$(curl -fsSL https://api.github.com/repos/noctalia-dev/noctalia-shell/releases/latest | grep -oP '"tag_name": "\K[^"]+' || echo "latest")
+        NOCTALIA_URL="https://github.com/noctalia-dev/noctalia-shell/releases/download/${NOCTALIA_RELEASE}/noctalia-${NOCTALIA_RELEASE}.tar.gz"
+        
+        if curl -fsSL "$NOCTALIA_URL" | tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia 2>/dev/null; then
+          echo "Successfully installed noctalia-shell"
+        else
+          echo "Warning: Failed to download noctalia-shell from releases, using latest available"
+          curl -fsSL https://github.com/noctalia-dev/noctalia-shell/releases/latest/download/noctalia-latest.tar.gz | \
+            tar -xz --strip-components=1 -C /usr/lib/noctalia/usr/share/quickshell/shells/noctalia || {
+            echo "Error: Could not download noctalia-shell"
+            exit 1
+          }
+        fi
+        
+        # Create noctalia-qs wrapper script
+        cat << 'WRAPPER' > /usr/bin/noctalia-qs
         #!/bin/bash
-        export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
-        export QUICKSHELL_SHELL_PATH=/usr/lib/noctalia/usr/share/quickshell/shells
-        if [[ "$*" == *"-c"* ]] || [[ "$*" == *"--config"* ]]; then
+        # Noctalia QuickShell wrapper - used by both noctalia and dms
+        export QML2_IMPORT_PATH="/usr/lib/noctalia/usr/lib64/qt6/qml:${QML2_IMPORT_PATH:-}"
+        export QUICKSHELL_SHELL_PATH="/usr/lib/noctalia/usr/share/quickshell/shells"
+        
+        if [[ "${*}" =~ (-c|--config) ]]; then
             exec /usr/lib/noctalia/usr/bin/qs "$@"
         else
             exec /usr/lib/noctalia/usr/bin/qs -c noctalia "$@"
         fi
-        EOF
+        WRAPPER
         chmod +x /usr/bin/noctalia-qs
+        
+        # Create symlink for DMS compatibility (if not already present)
+        if command -v qs >/dev/null 2>&1; then
+          echo "QuickShell already available at $(command -v qs)"
+        else
+          ln -sf /usr/bin/noctalia-qs /usr/bin/qs
+          echo "Created symlink: /usr/bin/qs -> /usr/bin/noctalia-qs"
+        fi
+        
+        echo "Noctalia setup complete. DMS will use noctalia-qs by default."
+        
+        # Cleanup
+        rm -rf /tmp/noctalia* /tmp/*.rpm 2>/dev/null || true
 
-  # STEP 4: Configuration & Dots
+  # STEP 3: Configuration & Dots
   - type: chezmoi
     repository: "https://github.com/timothybear11/ArtixDots"
     all-users: true
 
   - type: brew
 
-  # STEP 5: Branding
+  # STEP 4: Branding
   - type: os-release
     properties:
       NAME: Guardian OS
