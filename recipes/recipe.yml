@@ -87,7 +87,7 @@ modules:
       - "systemctl enable scx.service || systemctl enable scx-loader.service || true"
 
   - type: script
-    scripts:
+    snippets:
       - |
         # Enable DMS specifically for the Niri session globally
         mkdir -p /usr/lib/systemd/user/niri.service.wants
