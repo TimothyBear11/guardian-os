@@ -5,11 +5,10 @@ base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
 image-version: 44
 
 modules:
-  # STEP 1: Repository & Package Management (Schema-Correct DNF)
+  # STEP 1: Repository & Package Management (Schema-Matched DNF)
   - type: dnf
-    # Global options for this module call
-    install-weak-deps: false
     repos:
+      # Matches #/$defs/DnfRepo/properties/files
       files:
         - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
         - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
@@ -19,9 +18,10 @@ modules:
         - https://copr.fedorainfracloud.org/coprs/lilay/topgrade/repo/fedora-44/lilay-topgrade-fedora-44.repo
         - https://copr.fedorainfracloud.org/coprs/avengemedia/dms/repo/fedora-44/avengemedia-dms-fedora-44.repo
     install:
-      # In the dnf module, 'packages' is a simple list of strings
+      # Matches #/$defs/DnfInstall properties (sibling to packages)
+      install-weak-deps: false
       packages:
-        # Gaming & GPU Compute (RX 6700 XT Stack)
+        # Gaming & GPU Compute (RX 6700 XT)
         - steam
         - kernel-modules-extra
         - mesa-dri-drivers.i686
@@ -51,7 +51,7 @@ modules:
         - btop
         - plymouth-plugin-script
 
-  # STEP 2: Jailing Terra (Custom Repo File)
+  # STEP 2: Jailing Terra (Custom Repo File via Script)
   - type: script
     snippets:
       - |
@@ -64,7 +64,7 @@ modules:
         includepkgs=noctalia-qs,noctalia-shell,quickshell
         EOF
 
-  # STEP 3: Assets & Services (Schedulers + AI + Shell Jail)
+  # STEP 3: Services (Schedulers + Ollama + Noctalia Jail)
   - type: script
     snippets:
       # Sched-ext: Rusty 5800X Optimization
@@ -82,7 +82,7 @@ modules:
         EOF
         systemctl enable scx_rusty.service
 
-      # Ollama Engine Setup (Natively in /usr)
+      # Ollama Engine Setup
       - |
         curl -L https://ollama.com/download/ollama-linux-amd64.tar.gz | tar -xz -C /usr
         cat << 'EOF' > /etc/systemd/system/ollama.service
@@ -99,7 +99,7 @@ modules:
         EOF
         systemctl enable ollama.service
 
-      # Noctalia Shell Jail & Assets
+      # Noctalia Shell Extraction
       - |
         mkdir -p /usr/lib/noctalia
         dnf download --destdir=/tmp -y noctalia-qs --arch=$(arch)
@@ -120,7 +120,7 @@ modules:
         EOF
         chmod +x /usr/bin/noctalia-qs
 
-  # STEP 4: User Configuration (Dots & Brew)
+  # STEP 4: Homebrew & Dots
   - type: chezmoi
     repository: "https://github.com/timothybear11/ArtixDots"
     all-users: true
