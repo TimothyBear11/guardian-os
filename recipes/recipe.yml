@@ -105,34 +105,36 @@ modules:
   - type: script
     snippets:
       - |
-        # 1. Prepare the persistent home
+        # 1. Prepare and clean the jail
         mkdir -p /usr/lib/noctalia
         rm -rf /usr/lib/noctalia/*
         cd /tmp
 
-        # 2. Ensure Terra Repo is active
+        # 2. Grab BOTH engine and shell from Terra
         curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo -o /etc/yum.repos.d/terra.repo
-
-        # 3. Download BOTH the engine and the shell
-        # noctalia-qs: The engine (binary: qs)
-        # noctalia-shell: The actual UI/Config files
         dnf download -y noctalia-qs noctalia-shell --arch=$(arch) --releasever=44
 
-        # 4. Extract everything into our custom prefix
-        # This preserves the /usr/bin and /usr/share hierarchy inside /usr/lib/noctalia
-        rpm2cpio noctalia-qs*.rpm | cpio -idmv -D /usr/lib/noctalia
-        rpm2cpio noctalia-shell*.rpm | cpio -idmv -D /usr/lib/noctalia
+        # 3. Extract everything (using a loop to avoid fish wildcard issues)
+        for rpm in noctalia-qs*.rpm noctalia-shell*.rpm; do
+            [ -f "$rpm" ] && rpm2cpio "$rpm" | cpio -idmv -D /usr/lib/noctalia
+        done
 
-        # 5. Update the wrapper to point to the internal shell path
-        # Since we extracted to a custom path, we point directly to the shell.qml
-        # to bypass the standard search path issues.
+        # 4. Create a smarter wrapper
         cat << 'EOF' > /usr/bin/noctalia-qs
         #!/bin/bash
+        # 1. Tell Quickshell where its custom libraries are
         export QML2_IMPORT_PATH=/usr/lib/noctalia/usr/lib64/qt6/qml:$QML2_IMPORT_PATH
 
-        # We point to the 'qs' binary and explicitly path to the extracted shell.qml
-        # The path below is the standard location for the Terra noctalia-shell package
-        exec /usr/lib/noctalia/usr/bin/qs -c /usr/lib/noctalia/usr/share/quickshell/shells/noctalia/shell.qml "$@"
+        # 2. Add our internal share to the shell search path
+        export QUICKSHELL_SHELL_PATH=/usr/lib/noctalia/usr/share/quickshell/shells:$QUICKSHELL_SHELL_PATH
+
+        # 3. Logic: If the user provides a config (-c or --config), just pass everything through.
+        # Otherwise, default to the internal noctalia-shell.
+        if [[ "$*" == *"-c"* ]] || [[ "$*" == *"--config"* ]]; then
+            exec /usr/lib/noctalia/usr/bin/qs "$@"
+        else
+            exec /usr/lib/noctalia/usr/bin/qs -c noctalia-shell "$@"
+        fi
         EOF
 
         chmod +x /usr/bin/noctalia-qs
