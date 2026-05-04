@@ -64,7 +64,9 @@ modules:
     repository: "https://github.com/timothybear11/dotfiles"
     all-users: true
 
-  - type: homebrew
+  - type: brew
+    packages:
+      - gh
     
 
   # STEP 4: Assets Mapping
