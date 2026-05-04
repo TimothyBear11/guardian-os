@@ -88,6 +88,13 @@ modules:
       # THE HARD FIX: Attempt to enable scx or scx-loader, but don't fail the build if it's tricky
       - "systemctl enable scx.service || systemctl enable scx-loader.service || true"
 
+  - type: script
+    scripts:
+      - |
+        # Enable DMS specifically for the Niri session globally
+        mkdir -p /usr/lib/systemd/user/niri.service.wants
+        ln -s /usr/lib/systemd/user/dms.service /usr/lib/systemd/user/niri.service.wants/dms.service  
+
   # STEP 6: Branding
   - type: os-release
     properties:
