@@ -95,6 +95,11 @@ modules:
         - qt6-qtmultimedia
         - tmux
         - pipx
+        - cmake
+        - gcc-c++ # This is Fedora's name for g++
+        - hyprland-devel # CRITICAL: This provides the headers hyprpm needs
+        - cpio # hyprpm often asks for this too
+        - pkg-config
 
   # STEP 2: Terra Repository & System Services
   - type: script
