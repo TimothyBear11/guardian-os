@@ -127,6 +127,7 @@ modules:
       - |
         set -euo pipefail
         curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst | tar --zstd -x -C /usr
+        curl -fsSL https://ollama.com/download/ollama-linux-amd64-rocm.tar.zst | tar --zstd -x -C /usr
         cat << 'EOF' > /etc/systemd/system/ollama.service
         [Unit]
         Description=Ollama Service
@@ -136,6 +137,8 @@ modules:
         User=root
         Restart=always
         Environment="OLLAMA_HOST=0.0.0.0"
+        Environment="HSA_OVERRIDE_GFX_VERSION=10.3.0"
+        Environment="OLLAMA_MAX_LOADED_MODELS=2"
         [Install]
         WantedBy=multi-user.target
         EOF
