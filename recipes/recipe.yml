@@ -35,6 +35,9 @@ modules:
         # RPMFusion repos (enables free & nonfree packages)
         - rpmfusion-free-release
         - rpmfusion-nonfree-release
+        # Terra Repos sudo
+        - terra-release-mesa
+        - terra-release-multimedia
         # Gaming & GPU (RX 6700 XT)
         - steam
         - rocm-hip
