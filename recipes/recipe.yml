@@ -13,14 +13,10 @@ modules:
         echo "Installing RPMFusion repositories..."
         dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
         dnf install -y https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-      # curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo | pkexec tee /etc/yum.repos.d/terra.repo
-      # sudo rpm-ostree install terra-release
 
-  # STEP 1: Repository Configuration (Fixed)
   - type: dnf
     repos:
       files:
-        # Use only .repo files, not .rpm installers
         - https://negativo17.org/repos/fedora-steam.repo
         - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       copr:
@@ -48,7 +44,7 @@ modules:
         - rocm-smi
         - clinfo
         - nvtop
-        # 32-bit Doodoo
+        # 32-bit
         - mesa-dri-drivers.i686
         - mesa-vulkan-drivers.i686
         - vulkan-loader.i686
@@ -73,7 +69,6 @@ modules:
         - plymouth-plugin-script
         - konsole
         - dolphin
-        # Got Lost
         - xdg-desktop-portal
         - xdg-desktop-portal-hyprland
         - xdg-desktop-portal-gtk
@@ -119,10 +114,8 @@ modules:
         - podman-docker
         - wget
 
-  # STEP 2: Terra Repository & System Services
   - type: script
     snippets:
-      # Sched-ext: Rusty 5800X Optimization
       - |
         set -euo pipefail
         cat << 'EOF' > /etc/systemd/system/scx_rusty.service
