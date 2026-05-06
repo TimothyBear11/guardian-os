@@ -100,6 +100,16 @@ modules:
         - hyprland-devel # CRITICAL: This provides the headers hyprpm needs
         - cpio # hyprpm often asks for this too
         - pkg-config
+        - yt-dlp
+        - ffmpeg
+        - python3-pip
+        - brightnessctl
+        - grim
+        - slurp
+        - ark
+        - podman
+        - podman-docker
+        - wget
 
   # STEP 2: Terra Repository & System Services
   - type: script
