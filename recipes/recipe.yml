@@ -7,14 +7,14 @@ image-version: 44
 modules:
   - type: script
     snippets:
-      # Install RPMFusion repos first (must be before dnf tries to use them)
+      # Install RPMFusion and Terra
       - |
         set -euo pipefail
         echo "Installing RPMFusion repositories..."
         dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
         dnf install -y https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-        curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo | pkexec tee /etc/yum.repos.d/terra.repo
-        sudo rpm-ostree install terra-release
+        # curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo | pkexec tee /etc/yum.repos.d/terra.repo
+        # sudo rpm-ostree install terra-release
 
   # STEP 1: Repository Configuration (Fixed)
   - type: dnf
@@ -22,6 +22,7 @@ modules:
       files:
         # Use only .repo files, not .rpm installers
         - https://negativo17.org/repos/fedora-steam.repo
+        - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       copr:
         - yalter/niri
         - lionheartp/Hyprland
