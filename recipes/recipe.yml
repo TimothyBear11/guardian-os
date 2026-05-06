@@ -13,14 +13,9 @@ modules:
         echo "Installing RPMFusion repositories..."
         dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
         dnf install -y https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-        echo "RPMFusion repositories installed"
-      # Install Terra repository (required for noctalia)
-      - |
-        set -euo pipefail
-        echo "Installing Terra repository..."
         curl -fsSL https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo | pkexec tee /etc/yum.repos.d/terra.repo
         sudo rpm-ostree install terra-release
-        echo "Terra repository installed successfully"
+
   # STEP 1: Repository Configuration (Fixed)
   - type: dnf
     repos:
@@ -77,6 +72,7 @@ modules:
         - xdg-desktop-portal
         - xdg-desktop-portal-hyprland
         - xdg-desktop-portal-gtk
+        - xdg-desktop-portal-wlr
         - qtile-extras
         - gamescope
         - mangohud
@@ -104,9 +100,9 @@ modules:
         - tmux
         - pipx
         - cmake
-        - gcc-c++ # This is Fedora's name for g++
-        - hyprland-devel # CRITICAL: This provides the headers hyprpm needs
-        - cpio # hyprpm often asks for this too
+        - gcc-c++
+        - hyprland-devel
+        - cpio
         - pkg-config
         - yt-dlp
         - python3-pip
