@@ -99,9 +99,6 @@ modules:
         - qt6-qtmultimedia
         - tmux
         - pipx
-        - cmake
-        - gcc-c++
-        - hyprland-devel
         - cpio
         - pkg-config
         - yt-dlp
