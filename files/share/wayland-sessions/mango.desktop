@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Mango
+Comment=A tasty Wayland compositor
+Exec=/home/tbear/.config/mango/bin/mango-wrapper.sh
+Type=Application
+DesktopNames=mango
