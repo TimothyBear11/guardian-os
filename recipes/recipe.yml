@@ -101,7 +101,6 @@ modules:
         - cpio # hyprpm often asks for this too
         - pkg-config
         - yt-dlp
-        - ffmpeg --allowerasing
         - python3-pip
         - brightnessctl
         - grim
