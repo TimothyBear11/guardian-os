@@ -34,8 +34,6 @@ jobs:
         uses: blue-build/github-action@v1.11
         with:
           recipe: recipes/recipe.yml
-          # This tells the builder to look for an environment variable named MOK_PRIV
-          build_opts: "--secret id=MOK_PRIV,env=MOK_PRIV"
           maximize_build_space: true
         env: # <--- MOVE THIS OUTSIDE OF 'WITH'
           # This pulls the actual mana from your GitHub Secrets into the environment
