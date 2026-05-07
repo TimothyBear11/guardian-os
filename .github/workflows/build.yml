@@ -36,7 +36,7 @@ jobs:
           recipe: recipes/recipe.yml
           maximize_build_space: true
         env:
-          # The Mana for the Kernel
+          # This pulls the Mana from MOK_PRIV (Base64)
           MOK_PRIV: ${{ secrets.MOK_PRIV }}
-          # The Mana for the Image (Mapped to the name the Prince expects)
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          # This pulls the Mana from SIGNING_SECRET and gives it to the variable name the CLI expects
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
