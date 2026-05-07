@@ -253,7 +253,6 @@ modules:
     system:
       enabled:
         - uupd.timer # Keep the system updated
-        - tailscaled.service # If you use Tailscale for remote dev access
       disabled:
         - dnf-makecache.timer # We use uupd, so we don't need dnf's background noise
     user:
