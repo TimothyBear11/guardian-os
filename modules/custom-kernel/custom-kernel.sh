@@ -35,27 +35,32 @@ if [ "${SECURE_BOOT}" = "true" ]; then
     # Create a guaranteed writable path in /tmp
     WRITABLE_KEY="/tmp/signing_key.priv"
 
-    # THE LLOYD CHECK: We only check for the word "BEGIN".
-    # If the file doesn't have it, it's definitely Base64.
+    # THE LLOYD CHECK: If the key DOES NOT contain the word "BEGIN", it's Base64
     if ! grep -q "BEGIN" "${SIGNING_KEY}"; then
         log "Decoding base64 signing key to writable path..."
-        # The -i flag ignores any weird whitespace or line breaks from the paste
+        # Use -i to ignore garbage/newlines from the secret copy-paste
         base64 -d -i "${SIGNING_KEY}" > "${WRITABLE_KEY}"
     else
         log "Key is already plain text, copying to writable path..."
         cat "${SIGNING_KEY}" > "${WRITABLE_KEY}"
     fi
 
-    # THE RE-POINT: Direct the rest of the script to the purified vessel
+    # THE RE-POINT: Direct the rest of the script to use the purified vessel
     SIGNING_KEY="${WRITABLE_KEY}"
     chmod 600 "${SIGNING_KEY}"
 fi
 
+# ---------------------------------------------------------------------------
+# Key Inspection (Validation)
+# ---------------------------------------------------------------------------
 if [ "${SECURE_BOOT}" = "true" ]; then
-    openssl pkey -in "${SIGNING_KEY}"  -noout >/dev/null 2>&1 \
+    # This now checks the purified WRITABLE_KEY automatically
+    openssl pkey -in "${SIGNING_KEY}" -noout >/dev/null 2>&1 \
         || { err "sign.key is not a valid private key"; exit 1; }
+
     openssl x509 -in "${SIGNING_CERT}" -noout >/dev/null 2>&1 \
         || { err "sign.cert is not a valid X509 cert"; exit 1; }
+
     _tmp1=$(mktemp); _tmp2=$(mktemp)
     openssl pkey -in "${SIGNING_KEY}"  -pubout        >"${_tmp1}"
     openssl x509 -in "${SIGNING_CERT}" -pubkey -noout >"${_tmp2}"
