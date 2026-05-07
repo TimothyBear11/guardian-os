@@ -7,7 +7,7 @@ image-version: latest
 modules:
   - type: custom-kernel
     source: local
-    kernel: cachyos-bore-lto
+    kernel: cachyos-lto
     initramfs: true
     secrets:
       - type: env
