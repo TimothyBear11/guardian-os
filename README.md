@@ -1,43 +1,52 @@
-# BlueBuild Template &nbsp; [![bluebuild build badge](https://github.com/blue-build/template/actions/workflows/build.yml/badge.svg)](https://github.com/blue-build/template/actions/workflows/build.yml)
+Guardian OS: A Marchborn Masterpiece
 
-See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
+Guardian OS is a personalized, immutable Fedora-based operating system built for high-performance software development and immersive gaming. Utilizing the power of BlueBuild, it combines the reliability of atomic systems with the bleeding-edge optimizations of the CachyOS-LTO kernel.
+🛡️ Core Philosophy
 
-After setup, it is recommended you update this README to describe your custom image.
+Guardian OS is designed to be Lean & Mean. It focuses on a declarative, reproducible environment that prioritizes developer productivity and system transparency.
 
-## Installation
+    Custom Kernel: Powered by the CachyOS-LTO kernel for superior responsiveness and low-latency performance.
 
-> [!WARNING]  
-> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
+    Marchborn Aesthetics: The system is themed around an Aquamarine (#4DB8FF) and Bloodstone Red (#FF4D4D) palette.
 
-To rebase an existing atomic Fedora installation to the latest build:
+    Immutable Foundation: Built on Fedora’s atomic infrastructure to ensure a "no-break" system state.
 
-- First rebase to the unsigned image, to get the proper signing keys and policies installed:
-  ```
-  rpm-ostree rebase ostree-unverified-registry:ghcr.io/blue-build/template:latest
-  ```
-- Reboot to complete the rebase:
-  ```
-  systemctl reboot
-  ```
-- Then rebase to the signed image, like so:
-  ```
-  rpm-ostree rebase ostree-image-signed:docker://ghcr.io/blue-build/template:latest
-  ```
-- Reboot again to complete the installation
-  ```
-  systemctl reboot
-  ```
+    Developer Ready: Pre-configured for Boot.dev students and Linux power users, featuring tools like Helix, Qtile, and Fish.
 
-The `latest` tag will automatically point to the latest build. That build will still always use the Fedora version specified in `recipe.yml`, so you won't get accidentally updated to the next major version.
+🚀 Key Features
 
-## ISO
+    Advanced Scheduling: Integrated support for modern schedulers (EEVDF/BORE) with real-time tracking in Fastfetch.
 
-If build on Fedora Atomic, you can generate an offline ISO with the instructions available [here](https://blue-build.org/how-to/generate-iso/#_top). These ISOs cannot unfortunately be distributed on GitHub for free due to large sizes, so for public projects something else has to be used for hosting.
+    SecureBoot Signed: Full custom signing infrastructure for SecureBoot compatibility using personal MOK keys.
 
-## Verification
+    Custom Identity: Completely overhauled system branding, including a custom Plymouth boot splash and Fastfetch ASCII art.
 
-These images are signed with [Sigstore](https://www.sigstore.dev/)'s [cosign](https://github.com/sigstore/cosign). You can verify the signature by downloading the `cosign.pub` file from this repo and running the following command:
+    Hardware Optimized: Specific optimizations for AMD RX 6700 XT and high-speed NVMe storage.
 
-```bash
-cosign verify --key cosign.pub ghcr.io/blue-build/template
-```
+🛠️ Structure
+
+The repository follows the BlueBuild standard with several custom modules:
+
+    modules/custom-kernel: A specialized bash suite for kernel replacement and module signing.
+
+    files/system: Custom system-wide overrides for logos, backgrounds, and terminal presets.
+
+    recipes/recipe.yml: The primary declarative definition of the OS.
+
+⚓ Installation & Updates
+
+To rebase your current Fedora-based atomic system to Guardian OS:
+Bash
+
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/timothybear11/guardian-os:latest
+
+🤝 Special Thanks
+
+A special thanks goes out to Origami for providing the architectural inspiration and the foundational module logic that made the migration to a custom signed kernel possible. This project stands on the shoulders of their excellent work in the BlueBuild community.
+
+👤 Author
+
+Timothy Brian Criddle (T-Bear)
+Software Development Student @ Boot.dev
+
+    Note: All builds include SynthID watermarking and are managed via GitHub Actions for full auditability.
