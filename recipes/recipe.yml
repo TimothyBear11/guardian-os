@@ -61,7 +61,7 @@ modules:
         - qtile-extras
         - kanshi
         - swww
-        - mangowm 
+        - mangowm
         - noctalia-shell
         - topgrade
         # Den Essentials
@@ -77,7 +77,7 @@ modules:
         - xdg-desktop-portal-hyprland
         - xdg-desktop-portal-gtk
         - xdg-desktop-portal-wlr
-        - helix 
+        - helix
         - gamescope
         - mangohud
         - ripgrep
@@ -114,6 +114,7 @@ modules:
         - podman
         - podman-docker
         - wget
+        - fzf
 
   - type: script
     snippets:
