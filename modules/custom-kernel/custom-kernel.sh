@@ -31,21 +31,22 @@ else
     exit 1
 fi
 
-# If the key looks like base64 (no BEGIN header), decode it
-if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
-    log "Decoding base64 signing key..."
-    # Create a writable file in a standard scratch directory
-    REAL_KEY="/tmp/signing_key.priv"
-    base64 -d "${SIGNING_KEY}" > "${REAL_KEY}"
-    SIGNING_KEY="${REAL_KEY}" # Update the variable to point to the new file
-fi
+if [ "${SECURE_BOOT}" = "true" ]; then
+    # Create a writable path in /tmp
+    WRITABLE_KEY="/tmp/signing_key.priv"
 
-if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
-    log "Decoding base64 signing key..."
-    _tmp_key="/tmp/decoded_mok.priv"
-    base64 -d "${SIGNING_KEY}" > "${_tmp_key}"
-    chmod 600 "${_tmp_key}"
-    SIGNING_KEY="${_tmp_key}" # Re-assign variable to the writable path
+    # If the secret is Base64 (no BEGIN header), decode it to the writable path
+    if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
+        log "Decoding base64 signing key to writable path..."
+        base64 -d "${SIGNING_KEY}" > "${WRITABLE_KEY}"
+    else
+        log "Key is already plain text, copying to writable path..."
+        cp "${SIGNING_KEY}" "${WRITABLE_KEY}"
+    fi
+
+    # Crucial: Point the rest of the script to our new writable file
+    SIGNING_KEY="${WRITABLE_KEY}"
+    chmod 600 "${SIGNING_KEY}"
 fi
 
 if [ "${SECURE_BOOT}" = "true" ]; then
