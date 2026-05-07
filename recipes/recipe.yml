@@ -1,21 +1,13 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 name: guardian-os
 description: Final Guardian Workstation (ROCm + Ollama + Terra Fallback)
-base-image: quay.io/fedora-ostree-desktops/cosmic-atomic
+base-image: quay.io/fedora-ostree-desktops/kinoite
 image-version: 44
 
 modules:
-  - type: script
-    snippets:
-      # Install RPMFusion and Terra
-      - |
-        set -euo pipefail
-        echo "Installing RPMFusion repositories..."
-        dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm
-        dnf install -y https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
-
   - type: dnf
     repos:
+      nonfree: negativo17
       files:
         - https://negativo17.org/repos/fedora-steam.repo
         - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
@@ -29,9 +21,6 @@ modules:
     install:
       install-weak-deps: false
       packages:
-        # RPMFusion repos (enables free & nonfree packages)
-        - rpmfusion-free-release
-        - rpmfusion-nonfree-release
         # Terra Repos
         - terra-release
         - terra-release-mesa
@@ -50,20 +39,17 @@ modules:
         - vulkan-loader.i686
         - glibc.i686
         - ibus-gtk2.i686
-        # Performance
+        # Performance & Desktop (Found via Terra F44 + COPR)
         - scx-scheds
         - scx-tools
-        # Window Managers
         - niri
         - hyprland
         - hyprland-guiutils
         - qtile-wayland
         - qtile-extras
-        - kanshi
-        - swww
-        - mangowm
         - noctalia-shell
         - topgrade
+        - mangowm
         # Den Essentials
         - fish
         - neovim
@@ -71,8 +57,6 @@ modules:
         - fastfetch
         - btop
         - plymouth-plugin-script
-        - konsole
-        - dolphin
         - xdg-desktop-portal
         - xdg-desktop-portal-hyprland
         - xdg-desktop-portal-gtk
@@ -85,7 +69,6 @@ modules:
         - git
         - jq
         - socat
-        - polkit-kde
         - sqlite
         - playerctl
         - libnotify
@@ -111,10 +94,11 @@ modules:
         - grim
         - slurp
         - ark
-        - podman
-        - podman-docker
         - wget
-        - fzf
+        - konsole
+        - kate
+        - kanshi
+        - swww
 
   - type: script
     snippets:
@@ -174,7 +158,6 @@ modules:
   # STEP: System Clean-up (Notification Daemon Conflict Resolution)
   - type: script
     snippets:
-      - "rm -f /usr/share/dbus-1/services/fr.emersion.mako.service"
       - "plymouth-set-default-theme guardian"
 
   # STEP 4: Branding
