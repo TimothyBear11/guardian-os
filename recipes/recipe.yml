@@ -10,8 +10,8 @@ modules:
     kernel: cachyos-bore-lto
     initramfs: true
     secrets:
-      - type: file
-        source: .secure_files/MOK.priv # This is the hidden one we just moved
+      - type: env
+        source: MOK_PRIV
         mount:
           type: file
           destination: /tmp/certs/MOK.priv
