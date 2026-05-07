@@ -243,9 +243,6 @@ modules:
           sed -i 's/AutomaticUpdatePolicy=stage/AutomaticUpdatePolicy=none/g' /etc/rpm-ostreed.conf
         fi
 
-      # 3. Enable the uupd auto-update timers
-      - "systemctl enable uupd.timer"
-
       - |
         echo "Pruning extra kernels..."
         KERNEL_VERSION=$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
