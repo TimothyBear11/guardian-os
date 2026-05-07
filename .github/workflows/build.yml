@@ -35,9 +35,11 @@ jobs:
         with:
           recipe: recipes/recipe.yml
           maximize_build_space: true
-          # ADD THESE TWO LINES:
+          # Fixes the "Unable to find key pair" error
+          cosign_private_key: ${{ secrets.SIGNING_SECRET }}
+          # Fixes the "interactive login" error for the Fedora registry
           registry_token: ${{ github.token }}
           registry_username: ${{ github.repository_owner }}
         env:
+          # Keeps the MOK mana available for your custom-kernel.sh script
           MOK_PRIV: ${{ secrets.MOK_PRIV }}
-          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
