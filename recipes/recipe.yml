@@ -10,8 +10,8 @@ modules:
     kernel: cachyos-lto
     initramfs: true
     secrets:
-      - type: file
-        source: .secure_files/MOK.priv
+      - type: env
+        name: MOK_PRIV # This matches what is in your .github/workflows/build.yml
         mount:
           type: file
           destination: /tmp/certs/MOK.priv
