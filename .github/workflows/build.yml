@@ -35,8 +35,9 @@ jobs:
         with:
           recipe: recipes/recipe.yml
           maximize_build_space: true
+          # The "Front Door" input the Action is looking for
+          # Verify if it's SIGNING_SECRET or COSIGN_PRIVATE_KEY in your GitHub settings!
+          cosign_private_key: ${{ secrets.SIGNING_SECRET }}
         env:
+          # The "Side Door" for your custom-kernel.sh script to find the MOK mana
           MOK_PRIV: ${{ secrets.MOK_PRIV }}
-
-          # CHANGE THIS: Map your actual 'SIGNING_SECRET' to the name the CLI expects
-          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
