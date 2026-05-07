@@ -34,10 +34,10 @@ fi
 # If the key looks like base64 (no BEGIN header), decode it
 if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
     log "Decoding base64 signing key..."
-    _tmp_key=$(mktemp)
-    base64 -d "${SIGNING_KEY}" > "${_tmp_key}"
-    cp "${_tmp_key}" "${SIGNING_KEY}"
-    rm -f "${_tmp_key}"
+    # Create a writable file in a standard scratch directory
+    REAL_KEY="/tmp/signing_key.priv"
+    base64 -d "${SIGNING_KEY}" > "${REAL_KEY}"
+    SIGNING_KEY="${REAL_KEY}" # Update the variable to point to the new file
 fi
 
 if [ "${SECURE_BOOT}" = "true" ]; then
