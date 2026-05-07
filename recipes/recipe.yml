@@ -39,7 +39,7 @@ modules:
         - lionheartp/Hyprland
         - lilay/topgrade
         - ublue-os/packages
-        - bluebuild/bluebuild
+        #  - bluebuild/bluebuild
         - avengemedia/dms
         - bieszczaders/kernel-cachyos
         - bieszczaders/kernel-cachyos-addons
@@ -69,7 +69,7 @@ modules:
         - scx-tools
         # Bluebuild
         - uupd
-        - bluebuild
+        #    - bluebuild
         - ublue-os-just
         - ublue-os-udev-rules
         - ublue-os-media-automount-udev
