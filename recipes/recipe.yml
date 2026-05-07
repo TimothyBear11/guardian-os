@@ -11,13 +11,13 @@ modules:
     initramfs: true
     secrets:
       - type: env
-        source: MOK_PRIV
+        name: MOK_PRIV
         mount:
           type: file
           destination: /tmp/certs/MOK.priv
     sign:
       key: /tmp/certs/MOK.priv
-      cert: MOK.pem # This is the public one in your repo root
+      cert: MOK.pem
       mok-password: guardian
   - type: dnf
     repos:
