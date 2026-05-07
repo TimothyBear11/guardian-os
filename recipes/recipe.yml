@@ -17,7 +17,7 @@ modules:
           destination: /tmp/certs/MOK.priv
     sign:
       key: /tmp/certs/MOK.priv
-      cert: MOK.pem
+      cert: /tmp/modules/custom-kernel/MOK.pem
       mok-password: guardian
   - type: dnf
     repos:
