@@ -5,6 +5,20 @@ base-image: ghcr.io/blue-build/base-images/fedora-kinoite
 image-version: 44
 
 modules:
+  - type: custom-kernel
+    source: local
+    kernel: cachyos-bore-lto
+    initramfs: true
+    secrets:
+      - type: file
+        source: .secure_files/MOK.priv # This is the hidden one we just moved
+        mount:
+          type: file
+          destination: /tmp/certs/MOK.priv
+    sign:
+      key: /tmp/certs/MOK.priv
+      cert: MOK.pem # This is the public one in your repo root
+      mok-password: guardian # Use the password you set before!
   - type: dnf
     repos:
       nonfree: negativo17
