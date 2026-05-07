@@ -30,15 +30,16 @@ jobs:
           - recipe.yml
     steps:
       # the build is fully handled by the reusable github action
-      - name: Build Custom Image
+      - name: Build Image
         uses: blue-build/github-action@v1.11
         with:
-          recipe: ${{ matrix.recipe }}
-          cosign_private_key: ${{ secrets.SIGNING_SECRET }}
-          secrets: |
-            MOK_PRIV=${{ secrets.MOK_PRIV }}
-          registry_token: ${{ github.token }}
-          pr_event_number: ${{ github.event.number }}
+          recipe: recipes/recipe.yml
+          # This tells the builder to look for an environment variable named MOK_PRIV
+          build_opts: "--secret id=MOK_PRIV,env=MOK_PRIV"
+          maximize_build_space: true
+        env: # <--- MOVE THIS OUTSIDE OF 'WITH'
+          # This pulls the actual mana from your GitHub Secrets into the environment
+          MOK_PRIV: ${{ secrets.MOK_PRIV }}
 
           # enabled by default, disable if your image is small and you want faster builds
           maximize_build_space: true
