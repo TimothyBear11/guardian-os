@@ -39,6 +39,7 @@ modules:
         - lionheartp/Hyprland
         - lilay/topgrade
         - ublue-os/packages
+        - bluebuild/bluebuild
         - avengemedia/dms
         - bieszczaders/kernel-cachyos
         - bieszczaders/kernel-cachyos-addons
