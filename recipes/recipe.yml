@@ -5,6 +5,15 @@ base-image: registry.fedoraproject.org/fedora-kinoite
 image-version: 44
 
 modules:
+  - type: files
+    files:
+      - source: system
+        destination: /
+  - type: dnf
+    install:
+      packages:
+        - sbsigntools
+
   - type: custom-kernel
     source: local
     kernel: cachyos-lto
@@ -112,6 +121,16 @@ modules:
         - kate
         - kanshi
         - swww
+    remove:
+      auto-remove: true
+      packages:
+        - firefox
+        - firefox-langpacks
+        - gnome-system-monitor
+        - toolbox
+        - google-noto-color-emoji-fonts
+        - gnome-disk-utility
+        - waybar
 
   - type: script
     snippets:
