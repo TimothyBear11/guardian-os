@@ -36,7 +36,7 @@ jobs:
           recipe: recipes/recipe.yml
           maximize_build_space: true
         env:
-          # This pulls the Mana from MOK_PRIV (Base64)
           MOK_PRIV: ${{ secrets.MOK_PRIV }}
-          # This pulls the Mana from SIGNING_SECRET and gives it to the variable name the CLI expects
+
+          # CHANGE THIS: Map your actual 'SIGNING_SECRET' to the name the CLI expects
           COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
