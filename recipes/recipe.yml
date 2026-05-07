@@ -216,7 +216,12 @@ modules:
 
       # 3. Enable the uupd auto-update timers
       - "systemctl enable uupd.timer"
-      - "rm -f /etc/yum.repos.d/fedora-steam.repo"
+
+      - |
+        echo "Pruning extra kernels..."
+        KERNEL_VERSION=$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
+        find /usr/lib/modules -maxdepth 1 -mindepth 1 -not -name "$KERNEL_VERSION" -exec rm -rf {} +
+        echo "Pruning complete. Only $KERNEL_VERSION remains."
 
   # STEP 4: Branding
   - type: os-release
