@@ -149,6 +149,24 @@ modules:
         - fedora-chromium-config-kde
         - fedora-chromium-config
         - fedora-bookmarks
+        - cups
+        - sane-backends
+        - hplip
+        # Accessibility (The "Speech" Bloat)
+        - brltty
+        - orca
+        - speech-dispatcher
+        # Virtualization (Bare Metal don't need these)
+        - open-vm-tools
+        - qemu-guest-agent
+        - hyperv-daemons
+        - spice-vdagent
+        - khelpcenter
+        # Modem services
+        - ModemManager
+        - qcom-wwan-firmware
+        - espeak-ng
+        - braille-printer-app
 
   - type: script
     snippets:
