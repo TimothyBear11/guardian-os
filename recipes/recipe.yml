@@ -10,14 +10,14 @@ modules:
     kernel: cachyos-lto
     initramfs: true
     secrets:
-      - type: env
-        name: MOK_PRIV
+      - type: file
+        source: .secure_files/MOK.priv
         mount:
           type: file
           destination: /tmp/certs/MOK.priv
     sign:
       key: /tmp/certs/MOK.priv
-      cert: /tmp/modules/custom-kernel/MOK.pem
+      cert: /usr/share/cert/MOK.pem
       mok-password: guardian
   - type: dnf
     repos:
