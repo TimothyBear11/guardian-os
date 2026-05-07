@@ -1,0 +1,55 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "source": "/usr/share/fastfetch/presets/guardian/guardian-ascii.txt",
+    "color": {
+      "1": "blue", // Aquamarine part
+      "2": "red", // Bloodstone part
+    },
+  },
+  "modules": [
+    "title",
+    "separator",
+    {
+      "type": "os",
+      "key": "OS",
+      "keyColor": "34", // Blue
+      "format": "{3} {12}",
+    },
+    "host",
+    "kernel",
+    {
+      "type": "command",
+      "key": "Scheduler",
+      "keyColor": "34", // Guardian Blue
+      "text": "[ -f /sys/kernel/sched_ext/root/ops ] && cat /sys/kernel/sched_ext/root/ops | cut -d'_' -f1 || echo 'Default (EEVDF)'",
+    },
+    "uptime",
+    {
+      "type": "command",
+      "key": "OS Lifetime",
+      "keyColor": "31", // Guardian Red
+      "text": "echo $(($(($(date +%s) - $(stat -c %Y /etc/machine-id))) / 86400)) days",
+    },
+    "packages",
+    "shell",
+    "display",
+    "wm",
+    "terminal",
+    "cpu",
+    {
+      "type": "gpu",
+      "keyColor": "31", // Red for the 6700 XT
+    },
+    "memory",
+    "break",
+    {
+      "type": "colors",
+      "symbol": "circle",
+      "paddingLeft": 2,
+      "block": {
+        "range": [0, 7],
+      },
+    },
+  ],
+}
