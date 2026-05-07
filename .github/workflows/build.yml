@@ -36,9 +36,7 @@ jobs:
           recipe: recipes/recipe.yml
           maximize_build_space: true
         env:
-          # The Kernel Mana (The one we just fixed)
+          # The Mana for the Kernel
           MOK_PRIV: ${{ secrets.MOK_PRIV }}
-
-          # The Image Mana (The one it's asking for now)
-          # Note: BlueBuild CLI specifically looks for this exact name
-          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
+          # The Mana for the Image (Mapped to the name the Prince expects)
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
