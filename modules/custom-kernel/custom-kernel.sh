@@ -35,7 +35,8 @@ if [ "${SECURE_BOOT}" = "true" ]; then
     # Create a guaranteed writable path in /tmp
     WRITABLE_KEY="/tmp/signing_key.priv"
 
-    # Robust check: If the key DOES NOT contain the word "BEGIN", it's Base64
+    # THE LLOYD CHECK: We only check for "BEGIN".
+    # If the file doesn't have it, it's definitely Base64.
     if ! grep -q "BEGIN" "${SIGNING_KEY}"; then
         log "Decoding base64 signing key to writable path..."
         base64 -d "${SIGNING_KEY}" > "${WRITABLE_KEY}"
@@ -44,7 +45,7 @@ if [ "${SECURE_BOOT}" = "true" ]; then
         cat "${SIGNING_KEY}" > "${WRITABLE_KEY}"
     fi
 
-    # THE MAGIC TRICK: Point the rest of the script to our new writable vessel
+    # THE RE-POINT: Direct the rest of the script to the pure vessel
     SIGNING_KEY="${WRITABLE_KEY}"
     chmod 600 "${SIGNING_KEY}"
 fi
