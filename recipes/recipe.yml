@@ -28,21 +28,6 @@ modules:
       key: /tmp/certs/MOK.priv
       cert: /tmp/modules/custom-kernel/MOK.pem
       mok-password: guardian
-  - type: script
-    snippets:
-      - |
-        echo "Phase 1: Detecting CachyOS kernel directory..."
-        # Find the actual directory name that contains 'cachyos'
-        CACHY_DIR=$(ls /usr/lib/modules | grep "cachyos" | head -n 1)
-
-        if [ -n "$CACHY_DIR" ]; then
-          echo "Found CachyOS kernel: $CACHY_DIR. Pruning others..."
-          # Delete everything in /usr/lib/modules that is NOT the cachy directory
-          find /usr/lib/modules -maxdepth 1 -mindepth 1 ! -name "$CACHY_DIR" -exec rm -rf {} +
-          echo "Pruning complete."
-        else
-          echo "ERROR: CachyOS kernel directory not found! Skipping prune to avoid broken boot."
-        fi
   - type: dnf
     repos:
       nonfree: negativo17
