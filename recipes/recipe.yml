@@ -210,6 +210,14 @@ modules:
       url-fonts:
         - name: NotoColorEmoji
           url: https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf
+      nerd-fonts:
+        - FiraCode
+        - JetBrainsMono
+        - NerdFontsSymbolsOnly
+      google-fonts:
+        - Acme # Moved here for better management
+        - Exo 2 # Great for a technical brand aesthetic
+        - Orbitron # Matches a sharp, "guardian" look
 
   - type: default-flatpaks
     configurations:
@@ -244,10 +252,22 @@ modules:
         find /usr/lib/modules -maxdepth 1 -mindepth 1 -not -name "$KERNEL_VERSION" -exec rm -rf {} +
         echo "Pruning complete. Only $KERNEL_VERSION remains."
 
+  - type: systemd
+    system:
+      enabled:
+        - uupd.timer # Keep the system updated
+        - tailscaled.service # If you use Tailscale for remote dev access
+      disabled:
+        - dnf-makecache.timer # We use uupd, so we don't need dnf's background noise
+    user:
+      enabled:
+        - op-agent.service
+
   # STEP 4: Branding
   - type: os-release
     properties:
       NAME: Guardian OS
       PRETTY_NAME: Guardian OS (Atomic)
 
+  - type: signing
   - type: initramfs
