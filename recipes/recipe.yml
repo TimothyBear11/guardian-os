@@ -215,6 +215,7 @@ modules:
 
       # 3. Enable the uupd auto-update timers
       - "systemctl enable uupd.timer"
+      - "rm -f /etc/yum.repos.d/fedora-steam.repo"
 
   # STEP 4: Branding
   - type: os-release
