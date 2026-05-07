@@ -35,9 +35,10 @@ jobs:
         with:
           recipe: recipes/recipe.yml
           maximize_build_space: true
-        env: # <--- MOVE THIS OUTSIDE OF 'WITH'
-          # This pulls the actual mana from your GitHub Secrets into the environment
+        env:
+          # The Kernel Mana (The one we just fixed)
           MOK_PRIV: ${{ secrets.MOK_PRIV }}
 
-          # enabled by default, disable if your image is small and you want faster builds
-          maximize_build_space: true
+          # The Image Mana (The one it's asking for now)
+          # Note: BlueBuild CLI specifically looks for this exact name
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
