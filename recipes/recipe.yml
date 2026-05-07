@@ -38,6 +38,7 @@ modules:
         - yalter/niri
         - lionheartp/Hyprland
         - lilay/topgrade
+        - ublue-os/packages
         - avengemedia/dms
         - bieszczaders/kernel-cachyos
         - bieszczaders/kernel-cachyos-addons
@@ -62,9 +63,16 @@ modules:
         - vulkan-loader.i686
         - glibc.i686
         - ibus-gtk2.i686
-        # Performance & Desktop (Found via Terra F44 + COPR)
+        # Performance
         - scx-scheds
         - scx-tools
+        # Bluebuild
+        - uupd
+        - bluebuild
+        - ublue-os-just
+        - ublue-os-udev-rules
+        - ublue-os-media-automount-udev
+        # Window Managers
         - niri
         - hyprland
         - hyprland-guiutils
@@ -200,6 +208,13 @@ modules:
   - type: script
     snippets:
       - "plymouth-set-default-theme guardian"
+      - |
+        if [ -f /etc/rpm-ostreed.conf ]; then
+          sed -i 's/AutomaticUpdatePolicy=stage/AutomaticUpdatePolicy=none/g' /etc/rpm-ostreed.conf
+        fi
+
+      # 3. Enable the uupd auto-update timers
+      - "systemctl enable uupd.timer"
 
   # STEP 4: Branding
   - type: os-release
