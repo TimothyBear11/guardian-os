@@ -2,7 +2,7 @@
 name: guardian-os
 description: Final Guardian Workstation (ROCm + Ollama + Terra Fallback)
 base-image: ghcr.io/blue-build/base-images/fedora-kinoite
-image-version: latest
+image-version: 44
 
 modules:
   - type: custom-kernel
