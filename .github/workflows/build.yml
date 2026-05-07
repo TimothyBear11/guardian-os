@@ -33,7 +33,7 @@ jobs:
       - name: Build Image
         uses: blue-build/github-action@v1.11
         with:
-          recipe: recipes/recipe.yml
+          recipe: recipe.yml
           maximize_build_space: true
           # The "Front Door" input the Action is looking for
           # Verify if it's SIGNING_SECRET or COSIGN_PRIVATE_KEY in your GitHub settings!
