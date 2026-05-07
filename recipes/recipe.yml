@@ -50,16 +50,20 @@ modules:
         - vulkan-loader.i686
         - glibc.i686
         - ibus-gtk2.i686
-        # Performance & Desktop (Found via Terra F44 + COPR)
+        # Performance
+        - scx-scheds
+        - scx-tools
+        # Window Managers
         - niri
         - hyprland
         - hyprland-guiutils
         - qtile-wayland
-        - scx-scheds
-        - scx-tools
+        - qtile-extras
+        - kanshi
+        - swww
+        - mangowm 
         - noctalia-shell
         - topgrade
-        - mangowm
         # Den Essentials
         - fish
         - neovim
@@ -73,7 +77,7 @@ modules:
         - xdg-desktop-portal-hyprland
         - xdg-desktop-portal-gtk
         - xdg-desktop-portal-wlr
-        - qtile-extras
+        - helix 
         - gamescope
         - mangohud
         - ripgrep

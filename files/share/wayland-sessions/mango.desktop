@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Mango
-Comment=A tasty Wayland compositor
+Name=Mango (Guardian)
+Comment=Guardian OS Wrapped Mango 
 Exec=/home/tbear/.config/mango/bin/mango-wrapper.sh
 Type=Application
 DesktopNames=mango
