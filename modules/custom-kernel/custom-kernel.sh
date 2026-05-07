@@ -32,19 +32,19 @@ else
 fi
 
 if [ "${SECURE_BOOT}" = "true" ]; then
-    # Create a writable path in /tmp
+    # Create a guaranteed writable path in /tmp
     WRITABLE_KEY="/tmp/signing_key.priv"
 
-    # If the secret is Base64 (no BEGIN header), decode it to the writable path
-    if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
+    # Robust check: If the key DOES NOT contain the word "BEGIN", it's Base64
+    if ! grep -q "BEGIN" "${SIGNING_KEY}"; then
         log "Decoding base64 signing key to writable path..."
         base64 -d "${SIGNING_KEY}" > "${WRITABLE_KEY}"
     else
         log "Key is already plain text, copying to writable path..."
-        cp "${SIGNING_KEY}" "${WRITABLE_KEY}"
+        cat "${SIGNING_KEY}" > "${WRITABLE_KEY}"
     fi
 
-    # Crucial: Point the rest of the script to our new writable file
+    # THE MAGIC TRICK: Point the rest of the script to our new writable vessel
     SIGNING_KEY="${WRITABLE_KEY}"
     chmod 600 "${SIGNING_KEY}"
 fi
