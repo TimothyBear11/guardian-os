@@ -40,6 +40,14 @@ if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
     SIGNING_KEY="${REAL_KEY}" # Update the variable to point to the new file
 fi
 
+if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
+    log "Decoding base64 signing key..."
+    _tmp_key="/tmp/decoded_mok.priv"
+    base64 -d "${SIGNING_KEY}" > "${_tmp_key}"
+    chmod 600 "${_tmp_key}"
+    SIGNING_KEY="${_tmp_key}" # Re-assign variable to the writable path
+fi
+
 if [ "${SECURE_BOOT}" = "true" ]; then
     openssl pkey -in "${SIGNING_KEY}"  -noout >/dev/null 2>&1 \
         || { err "sign.key is not a valid private key"; exit 1; }
