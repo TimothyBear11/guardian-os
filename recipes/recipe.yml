@@ -255,9 +255,6 @@ modules:
         - uupd.timer # Keep the system updated
       disabled:
         - dnf-makecache.timer # We use uupd, so we don't need dnf's background noise
-    user:
-      enabled:
-        - op-agent.service
 
   # STEP 4: Branding
   - type: os-release
