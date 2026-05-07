@@ -31,6 +31,15 @@ else
     exit 1
 fi
 
+# If the key looks like base64 (no BEGIN header), decode it
+if ! grep -q "BEGIN PRIVATE KEY" "${SIGNING_KEY}"; then
+    log "Decoding base64 signing key..."
+    _tmp_key=$(mktemp)
+    base64 -d "${SIGNING_KEY}" > "${_tmp_key}"
+    cp "${_tmp_key}" "${SIGNING_KEY}"
+    rm -f "${_tmp_key}"
+fi
+
 if [ "${SECURE_BOOT}" = "true" ]; then
     openssl pkey -in "${SIGNING_KEY}"  -noout >/dev/null 2>&1 \
         || { err "sign.key is not a valid private key"; exit 1; }
