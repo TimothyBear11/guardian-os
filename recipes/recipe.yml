@@ -210,6 +210,20 @@ modules:
         EOF
         systemctl enable ollama.service
 
+      - |
+        cat <<EOF > /usr/share/applications/mango.desktop
+        [Desktop Entry]
+        Version=1.0
+        Type=Application
+        Name=MangoHud
+        Comment=Overlay for monitoring system performance
+        Exec=mangohud --version
+        Icon=utilities-system-monitor
+        Terminal=false
+        Categories=Settings;Game;Utility;
+        EOF
+        chmod 644 /usr/share/applications/mango.desktop 
+
   # STEP 3: Configuration & Dots
   - type: chezmoi
     repository: "https://github.com/timothybear11/ArtixDots"
