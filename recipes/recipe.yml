@@ -213,14 +213,11 @@ modules:
       - |
         cat <<EOF > /usr/share/applications/mango.desktop
         [Desktop Entry]
-        Version=1.0
+        Name=Mango (Guardian)
+        Comment=Guardian OS Wrapped Mango 
+        Exec=/home/tbear/.config/mango/bin/mango-wrapper.sh
         Type=Application
-        Name=MangoHud
-        Comment=Overlay for monitoring system performance
-        Exec=mangohud --version
-        Icon=utilities-system-monitor
-        Terminal=false
-        Categories=Settings;Game;Utility;
+        DesktopNames=mango
         EOF
         chmod 644 /usr/share/applications/mango.desktop 
 
