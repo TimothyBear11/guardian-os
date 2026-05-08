@@ -50,20 +50,24 @@ modules:
         - terra-release
         - terra-release-mesa
         - terra-release-multimedia
-        # Gaming & GPU (RX 6700 XT)
-        - steam
+        # GPU (RX 6700 XT)
         - rocm-hip
         - rocm-opencl
         - rocm-runtime
         - rocm-smi
         - clinfo
         - nvtop
-        # 32-bit
+        # Steam
+        - steam
+        - steam-devices
+        - libva.i686
         - mesa-dri-drivers.i686
         - mesa-vulkan-drivers.i686
         - vulkan-loader.i686
         - glibc.i686
         - ibus-gtk2.i686
+        - libgcc.i686
+        - libstdc++.i686
         # Performance
         - scx-scheds
         - scx-tools
