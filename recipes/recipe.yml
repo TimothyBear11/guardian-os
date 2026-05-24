@@ -78,13 +78,13 @@ modules:
         - ublue-os-udev-rules
         - ublue-os-media-automount-udev
         # Window Managers
- #       - niri
+        - niri
  #       - hyprland
  #       - hyprland-guiutils
  #       - qtile-wayland
  #       - qtile-extras
         - noctalia-shell
- #       - topgrade
+        - topgrade
         - mangowm
         # Den Essentials
         - fish
