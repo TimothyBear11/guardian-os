@@ -51,12 +51,12 @@ modules:
         - terra-release-mesa
         - terra-release-multimedia
         # GPU (RX 6700 XT)
-        - rocm-hip
-        - rocm-opencl
-        - rocm-runtime
-        - rocm-smi
-        - clinfo
-        - nvtop
+#        - rocm-hip
+#        - rocm-opencl
+#        - rocm-runtime
+#        - rocm-smi
+#        - clinfo
+#        - nvtop
         # Steam
         - steam
         - steam-devices
@@ -78,13 +78,13 @@ modules:
         - ublue-os-udev-rules
         - ublue-os-media-automount-udev
         # Window Managers
-        - niri
-        - hyprland
-        - hyprland-guiutils
-        - qtile-wayland
-        - qtile-extras
+ #       - niri
+ #       - hyprland
+ #       - hyprland-guiutils
+ #       - qtile-wayland
+ #       - qtile-extras
         - noctalia-shell
-        - topgrade
+ #       - topgrade
         - mangowm
         # Den Essentials
         - fish
