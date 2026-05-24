@@ -262,10 +262,7 @@ modules:
         scope: system
         repo:
           title: Flathub (system)
-        install:
-          - com.github.tchx84.Flatseal
-          - io.github.flattool.Warehouse
-          - io.missioncenter.MissionCenter
+        
 
   # STEP: System Clean-up (Notification Daemon Conflict Resolution)
   - type: script
