@@ -135,6 +135,7 @@ modules:
         - kate
         - kanshi
         - swww
+        - awww
     remove:
       auto-remove: true
       packages:
