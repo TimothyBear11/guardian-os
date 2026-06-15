@@ -213,7 +213,7 @@ modules:
         systemctl enable ollama.service
 
       - |
-        cat <<EOF > /usr/share/applications/mango.desktop
+        cat <<EOF > /usr/share/wayland-sessions/mango.desktop
         [Desktop Entry]
         Name=Mango (Guardian)
         Comment=Guardian OS Wrapped Mango 
