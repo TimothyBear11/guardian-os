@@ -43,6 +43,7 @@ modules:
         - avengemedia/dms
         - bieszczaders/kernel-cachyos
         - bieszczaders/kernel-cachyos-addons
+        - georgewoodall82/Mindustry
     install:
       install-weak-deps: false
       packages:
@@ -50,13 +51,6 @@ modules:
         - terra-release
         - terra-release-mesa
         - terra-release-multimedia
-        # GPU (RX 6700 XT)
-#        - rocm-hip
-#        - rocm-opencl
-#        - rocm-runtime
-#        - rocm-smi
-#        - clinfo
-#        - nvtop
         # Steam
         - steam
         - steam-devices
@@ -79,10 +73,10 @@ modules:
         - ublue-os-media-automount-udev
         # Window Managers
         - niri
- #       - hyprland
- #       - hyprland-guiutils
- #       - qtile-wayland
- #       - qtile-extras
+        - hyprland
+        - hyprland-guiutils
+        - qtile-wayland
+        - qtile-extras
         - noctalia-shell
         - noctalia-git
         - topgrade
@@ -137,6 +131,7 @@ modules:
         - kanshi
         - awww
         - fuzzel
+        - mindustry
     remove:
       auto-remove: true
       packages:
