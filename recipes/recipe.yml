@@ -221,7 +221,7 @@ modules:
         Type=Application
         DesktopNames=mango
         EOF
-        chmod 644 /usr/share/applications/mango.desktop 
+        chmod 644 /usr/share/wayland-sessions/mango.desktop 
 
   # STEP 3: Configuration & Dots
   - type: chezmoi
