@@ -84,6 +84,7 @@ modules:
  #       - qtile-wayland
  #       - qtile-extras
         - noctalia-shell
+        - noctalia-git
         - topgrade
         - mangowm
         # Den Essentials
