@@ -71,10 +71,6 @@ modules:
         - fastfetch
         - btop
         - plymouth-plugin-script
-        - xdg-desktop-portal
-        - xdg-desktop-portal-hyprland
-        - xdg-desktop-portal-gtk
-        - xdg-desktop-portal-wlr
         - helix
         - gamescope
         - mangohud
@@ -168,43 +164,6 @@ modules:
         WantedBy=multi-user.target
         EOF
         systemctl enable scx_rusty.service
-
-      # Ollama Engine Setup
-      - |
-        set -euo pipefail
-        curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst | tar --zstd -x -C /usr
-        curl -fsSL https://ollama.com/download/ollama-linux-amd64-rocm.tar.zst | tar --zstd -x -C /usr
-        cat << 'EOF' > /etc/systemd/system/ollama.service
-        [Unit]
-        Description=Ollama Service
-        After=network-online.target
-        [Service]
-        ExecStart=/usr/bin/ollama serve
-        User=root
-        Restart=always
-        Environment="OLLAMA_HOST=0.0.0.0"
-        Environment="HSA_OVERRIDE_GFX_VERSION=10.3.0"
-        Environment="OLLAMA_MAX_LOADED_MODELS=2"
-        [Install]
-        WantedBy=multi-user.target
-        EOF
-        systemctl enable ollama.service
-
-      - |
-        cat <<EOF > /usr/share/wayland-sessions/mango.desktop
-        [Desktop Entry]
-        Name=Mango (Guardian)
-        Comment=Guardian OS Wrapped Mango 
-        Exec=/home/tbear/.config/mango/bin/mango-wrapper.sh
-        Type=Application
-        DesktopNames=mango
-        EOF
-        chmod 644 /usr/share/wayland-sessions/mango.desktop 
-
-  # STEP 3: Configuration & Dots
-  - type: chezmoi
-    repository: "https://github.com/timothybear11/ArtixDots"
-    all-users: true
 
   - type: brew
 
