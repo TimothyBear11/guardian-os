@@ -14,6 +14,29 @@ modules:
       packages:
         - sbsigntools
 
+  - type: script
+    snippets:
+      - |
+        set -euo pipefail
+        # Fix permissions for kernel module compilation
+        chmod 1777 /tmp /var/tmp
+        chmod 755 /var/cache/akmods 2>/dev/null || true
+
+  - type: custom-kernel
+    source: local
+    kernel: cachyos-lto
+    initramfs: true
+    secrets:
+      - type: env
+        name: MOK_PRIV
+        mount:
+          type: file
+          destination: /tmp/certs/MOK.priv
+    sign:
+      key: /tmp/certs/MOK.priv
+      cert: /tmp/modules/custom-kernel/MOK.pem
+      mok-password: guardian
+
   - type: custom-kernel
     source: local
     kernel: cachyos-lto
