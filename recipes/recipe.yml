@@ -37,20 +37,6 @@ modules:
       cert: /tmp/modules/custom-kernel/MOK.pem
       mok-password: guardian
 
-  - type: custom-kernel
-    source: local
-    kernel: cachyos-lto
-    initramfs: true
-    secrets:
-      - type: env
-        name: MOK_PRIV # This matches what is in your .github/workflows/build.yml
-        mount:
-          type: file
-          destination: /tmp/certs/MOK.priv
-    sign:
-      key: /tmp/certs/MOK.priv
-      cert: /tmp/modules/custom-kernel/MOK.pem
-      mok-password: guardian
   - type: dnf
     repos:
       nonfree: negativo17
@@ -282,7 +268,6 @@ modules:
         scope: system
         repo:
           title: Flathub (system)
-        
 
   # STEP: System Clean-up (Notification Daemon Conflict Resolution)
   - type: script
