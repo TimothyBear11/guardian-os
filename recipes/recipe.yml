@@ -29,7 +29,7 @@ modules:
         #- avengemedia/dms
         - bieszczaders/kernel-cachyos
         - bieszczaders/kernel-cachyos-addons
-        - georgewoodall82/Mindustry
+   
     install:
       install-weak-deps: false
       packages:
