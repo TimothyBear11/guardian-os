@@ -117,7 +117,7 @@ modules:
         - kanshi
         - awww
         - fuzzel
-        - mindustry
+        
     remove:
       auto-remove: true
       packages:
