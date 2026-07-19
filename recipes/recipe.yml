@@ -22,6 +22,7 @@ modules:
         - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       copr:
         - ublue-os/packages
+        - sneexy/zen-browser
        
    
     install:
@@ -91,11 +92,7 @@ modules:
         - slurp
         - ark
         - wget
-        - konsole
-        - kate
-        - kanshi
-        - awww
-        - fuzzel
+        - zen-browser
         
     remove:
       auto-remove: true
