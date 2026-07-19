@@ -23,6 +23,7 @@ modules:
       copr:
         - ublue-os/packages
         - sneexy/zen-browser
+        - bieszczaders/kernel-cachyos-addons
        
    
     install:
@@ -136,6 +137,7 @@ modules:
         Type=simple
         ExecStart=/usr/bin/scx_bpfland
         Restart=always
+        RestartSec=10s
         [Install]
         WantedBy=multi-user.target
         EOF
