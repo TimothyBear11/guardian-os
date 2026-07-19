@@ -21,9 +21,6 @@ modules:
         - https://negativo17.org/repos/fedora-steam.repo
         - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       copr:
-        #- yalter/niri
-        #- lionheartp/Hyprland
-        #- lilay/topgrade
         - ublue-os/packages
        
    
@@ -50,20 +47,9 @@ modules:
         - scx-tools
         # Bluebuild
         - uupd
-        #    - bluebuild
         - ublue-os-just
         - ublue-os-udev-rules
         - ublue-os-media-automount-udev
-        # Window Managers
-        #- niri
-        #- hyprland
-        #- hyprland-guiutils
-        #- qtile-wayland
-        #- qtile-extras
-        #- noctalia-shell
-        #- noctalia-git
-        #- topgrade
-        #- mangowm
         # Den Essentials
         - fish
         - neovim
@@ -122,16 +108,9 @@ modules:
         - gnome-disk-utility
         - waybar
         - yelp
-        - kmines
-        - kpat
-        - elisa-player
-        - skanpage
         - fedora-chromium-config-kde
         - fedora-chromium-config
         - fedora-bookmarks
-        - cups
-        - sane-backends
-        - hplip
         # Accessibility (The "Speech" Bloat)
         - brltty
         - orca
@@ -152,18 +131,18 @@ modules:
     snippets:
       - |
         set -euo pipefail
-        cat << 'EOF' > /etc/systemd/system/scx_rusty.service
+        cat << 'EOF' > /etc/systemd/system/scx_bpfland.service
         [Unit]
-        Description=Sched-ext Rusty Scheduler
+        Description=Sched-ext Bpfland Scheduler
         After=multi-user.target
         [Service]
         Type=simple
-        ExecStart=/usr/bin/scx_rusty
+        ExecStart=/usr/bin/scx_bpfland
         Restart=always
         [Install]
         WantedBy=multi-user.target
         EOF
-        systemctl enable scx_rusty.service
+        systemctl enable scx_bpfland.service
 
   - type: brew
 
@@ -210,12 +189,6 @@ modules:
         if [ -f /etc/rpm-ostreed.conf ]; then
           sed -i 's/AutomaticUpdatePolicy=stage/AutomaticUpdatePolicy=none/g' /etc/rpm-ostreed.conf
         fi
-
-      - |
-        echo "Pruning extra kernels..."
-        KERNEL_VERSION=$(rpm -q kernel-cachyos-lto --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}')
-        find /usr/lib/modules -maxdepth 1 -mindepth 1 -not -name "$KERNEL_VERSION" -exec rm -rf {} +
-        echo "Pruning complete. Only $KERNEL_VERSION remains."
 
   - type: systemd
     system:
