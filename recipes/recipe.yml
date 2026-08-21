@@ -111,7 +111,7 @@ modules:
         - fuzzel
         - fzf
         - gh
-        - kdeconnect
+        - kde-connect
         - neovim
         - nwg-look
         - protonplus
