@@ -22,8 +22,10 @@ modules:
         - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
       copr:
         - ublue-os/packages
-        - sneexy/zen-browser
+        - sneexy/floorp
         - bieszczaders/kernel-cachyos-addons
+        - lionheartp/Hyprland
+        - derisis13/ani-cli
        
    
     install:
@@ -52,6 +54,11 @@ modules:
         - ublue-os-just
         - ublue-os-udev-rules
         - ublue-os-media-automount-udev
+        # DEs
+        - hyprland
+        - hyprland-guiutils
+        - niri
+        - noctalia
         # Den Essentials
         - fish
         - neovim
@@ -77,6 +84,7 @@ modules:
         - kitty
         - gamemode
         - fftw
+        - qt6ct
         - qt6-qtdeclarative
         - qt6-qtwayland
         - qt6-qt5compat
@@ -93,7 +101,21 @@ modules:
         - slurp
         - ark
         - wget
-        - zen-browser
+        - floorp
+        - ani-cli
+        - bat
+        - cargo
+        - eza
+        - cava
+        - fd
+        - fuzzel
+        - fzf
+        - gh
+        - kdeconnect
+        - neovim
+        - nwg-look
+        - protonplus
+        - zed
         
     remove:
       auto-remove: true
@@ -109,6 +131,7 @@ modules:
         - fedora-chromium-config-kde
         - fedora-chromium-config
         - fedora-bookmarks
+        - mako
         # Accessibility (The "Speech" Bloat)
         - brltty
         - orca
