@@ -116,6 +116,8 @@ modules:
         - nwg-look
         - protonplus
         - zed
+        - nodejs
+        - ffmpeg
         
     remove:
       auto-remove: true
