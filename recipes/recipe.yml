@@ -10,12 +10,6 @@ modules:
       - source: system
         destination: /
   - type: dnf
-    install:
-      packages:
-        - sbsigntools
-        - libstdc++
-
-  - type: dnf
     repos:
       nonfree: negativo17
       files:
@@ -30,6 +24,8 @@ modules:
     install:
       install-weak-deps: false
       packages:
+        - sbsigntools
+        - libstdc++
         # Terra Repos
         - terra-release
         - terra-release-mesa
