@@ -25,7 +25,9 @@ modules:
       install-weak-deps: false
       packages:
         - sbsigntools
-        - libstdc++
+        # Pin libstdc++ packages to same version to avoid conflicts
+        - libstdc++-16.1.1-2.fc44.x86_64
+        - libstdc++-16.1.1-2.fc44.i686
         # Terra Repos
         - terra-release
         - terra-release-mesa
@@ -40,7 +42,6 @@ modules:
         - glibc.i686
         - ibus-gtk2.i686
         - libgcc.i686
-        - libstdc++.i686
         # Performance
         - scx-scheds
         - scx-tools
