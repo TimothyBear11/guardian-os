@@ -144,9 +144,19 @@ modules:
     snippets:
       - |
         set -euo pipefail
-        # Configure native scx-scheds default scheduler
-        mkdir -p /etc/default
-        echo "SCX_SCHEDULER=scx_bpfland" > /etc/default/scx
+        cat << 'EOF' > /etc/systemd/system/scx_bpfland.service
+        [Unit]
+        Description=Sched-ext Bpfland Scheduler
+        After=multi-user.target
+        [Service]
+        Type=simple
+        ExecStart=/usr/bin/scx_bpfland
+        Restart=always
+        RestartSec=10s
+        [Install]
+        WantedBy=multi-user.target
+        EOF
+        systemctl enable scx_bpfland.service
 
   - type: brew
 
@@ -197,7 +207,6 @@ modules:
     system:
       enabled:
         - uupd.timer
-        - scx_bpfland.service
       disabled:
         - dnf-makecache.timer
 
