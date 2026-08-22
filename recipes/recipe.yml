@@ -9,6 +9,7 @@ modules:
     files:
       - source: system
         destination: /
+
   - type: dnf
     repos:
       nonfree: negativo17
@@ -29,25 +30,30 @@ modules:
         - terra-release
         - terra-release-mesa
         - terra-release-multimedia
-        # Steam (minimal 32-bit support)
+        # Steam (32-bit core execution support)
         - steam
         - steam-devices
+        - glibc.i686
         - mesa-vulkan-drivers.i686
         - vulkan-loader.i686
-        # Performance
+        # Performance & Sched-ext
         - scx-scheds
         - scx-tools
-        # Bluebuild
+        # Bluebuild & UBlue Utilities
         - uupd
         - ublue-os-just
         - ublue-os-udev-rules
         - ublue-os-media-automount-udev
-        # DEs
+        # Desktop Environments & Portals
         - hyprland
         - hyprland-guiutils
         - niri
         - noctalia
-        # Den Essentials
+        - xdg-desktop-portal
+        - xdg-desktop-portal-gtk
+        - xdg-desktop-portal-hyprland
+        - xdg-desktop-portal-gnome
+        # System Essentials
         - fish
         - neovim
         - emacs-nox
@@ -58,7 +64,7 @@ modules:
         - gamescope
         - mangohud
         - ripgrep
-        - fd-find
+        - fd
         - git
         - jq
         - socat
@@ -93,12 +99,10 @@ modules:
         - cargo
         - eza
         - cava
-        - fd
         - fuzzel
         - fzf
         - gh
         - kde-connect
-        - neovim
         - nwg-look
         - protonplus
         - zed
@@ -120,11 +124,11 @@ modules:
         - fedora-chromium-config
         - fedora-bookmarks
         - mako
-        # Accessibility (The "Speech" Bloat)
+        # Accessibility
         - brltty
         - orca
         - speech-dispatcher
-        # Virtualization (Bare Metal don't need these)
+        # Virtualization
         - open-vm-tools
         - qemu-guest-agent
         - hyperv-daemons
@@ -140,23 +144,13 @@ modules:
     snippets:
       - |
         set -euo pipefail
-        cat << 'EOF' > /etc/systemd/system/scx_bpfland.service
-        [Unit]
-        Description=Sched-ext Bpfland Scheduler
-        After=multi-user.target
-        [Service]
-        Type=simple
-        ExecStart=/usr/bin/scx_bpfland
-        Restart=always
-        RestartSec=10s
-        [Install]
-        WantedBy=multi-user.target
-        EOF
-        systemctl enable scx_bpfland.service
+        # Configure native scx-scheds default scheduler
+        mkdir -p /etc/default
+        echo "SCX_SCHEDULER=scx_bpfland" > /etc/default/scx
 
   - type: brew
 
-  # STEP: Assets Mapping (Fonts & Plymouth)
+  # Assets Mapping
   - type: files
     files:
       - source: system-fonts
@@ -176,22 +170,21 @@ modules:
         - JetBrainsMono
         - NerdFontsSymbolsOnly
       google-fonts:
-        - Acme # Moved here for better management
-        - Exo 2 # Great for a technical brand aesthetic
-        - Orbitron # Matches a sharp, "guardian" look
+        - Acme
+        - Exo 2
+        - Orbitron
 
   - type: default-flatpaks
     configurations:
       - scope: user
         repo:
-          # you can override the title to make inclusion of both system and user repos clearer
           title: Flathub (user)
       - notify: false
         scope: system
         repo:
           title: Flathub (system)
 
-  # STEP: System Clean-up (Notification Daemon Conflict Resolution)
+  # System Clean-up & Plymouth Setup
   - type: script
     snippets:
       - "plymouth-set-default-theme guardian"
@@ -203,11 +196,11 @@ modules:
   - type: systemd
     system:
       enabled:
-        - uupd.timer # Keep the system updated
+        - uupd.timer
+        - scx.service
       disabled:
-        - dnf-makecache.timer # We use uupd, so we don't need dnf's background noise
+        - dnf-makecache.timer
 
-  # STEP 4: Branding
   - type: os-release
     properties:
       NAME: Guardian OS
