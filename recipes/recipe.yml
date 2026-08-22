@@ -25,9 +25,7 @@ modules:
         - sneexy/floorp
         - bieszczaders/kernel-cachyos-addons
         - lionheartp/Hyprland
-        - derisis13/ani-cli
-       
-   
+          
     install:
       install-weak-deps: false
       packages:
@@ -101,7 +99,6 @@ modules:
         - ark
         - wget
         - floorp
-        - ani-cli
         - bat
         - cargo
         - eza
