@@ -25,23 +25,15 @@ modules:
       install-weak-deps: false
       packages:
         - sbsigntools
-        # Pin libstdc++ packages to same version to avoid conflicts
-        - libstdc++-16.1.1-2.fc44.x86_64
-        - libstdc++-16.1.1-2.fc44.i686
         # Terra Repos
         - terra-release
         - terra-release-mesa
         - terra-release-multimedia
-        # Steam
+        # Steam (minimal 32-bit support)
         - steam
         - steam-devices
-        - libva.i686
-        - mesa-dri-drivers.i686
         - mesa-vulkan-drivers.i686
         - vulkan-loader.i686
-        - glibc.i686
-        - ibus-gtk2.i686
-        - libgcc.i686
         # Performance
         - scx-scheds
         - scx-tools
