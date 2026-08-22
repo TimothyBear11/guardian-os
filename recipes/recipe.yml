@@ -13,6 +13,7 @@ modules:
     install:
       packages:
         - sbsigntools
+        - libstdc++
 
   - type: dnf
     repos:
