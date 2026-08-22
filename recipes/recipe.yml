@@ -197,7 +197,7 @@ modules:
     system:
       enabled:
         - uupd.timer
-        - scx.service
+        - scx_bpfland.service
       disabled:
         - dnf-makecache.timer
 
