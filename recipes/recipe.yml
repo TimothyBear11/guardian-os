@@ -32,6 +32,7 @@ modules:
         - terra-release-multimedia
         # Greeter & Display Services
         - noctalia-greeter
+        - greetd
         - accountsservice
         # Steam (32-bit core execution support)
         - steam
