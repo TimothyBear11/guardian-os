@@ -1,37 +1,35 @@
 Guardian OS: A Marchborn Masterpiece
 
-Guardian OS is a personalized, immutable Fedora-based operating system built for high-performance software development and immersive gaming. Utilizing the power of BlueBuild, it combines the reliability of atomic systems with the bleeding-edge optimizations of the CachyOS-LTO kernel.
+Guardian OS is a personalized, immutable Fedora-based operating system built for high-performance software development and immersive, low-latency gaming. Utilizing the power of BlueBuild, it combines the ironclad reliability of atomic systems with a lightning-fast, modern Wayland compositor stack.
 🛡️ Core Philosophy
 
-Guardian OS is designed to be Lean & Mean. It focuses on a declarative, reproducible environment that prioritizes developer productivity and system transparency.
+Guardian OS is designed to be Lean & Mean. It focuses on a declarative, reproducible environment that prioritizes developer productivity, zero-overhead window management, and raw system responsiveness.
 
-    Custom Kernel: Powered by the CachyOS-LTO kernel for superior responsiveness and low-latency performance.
+    Umbriel & Noctalia Stack: Powered by the ultra-responsive Umbriel Wayland compositor paired with the clean, modular Noctalia shell for peerless gaming performance and window handling.
 
-    Marchborn Aesthetics: The system is themed around an Aquamarine (#4DB8FF) and Bloodstone Red (#FF4D4D) palette.
+    Marchborn Aesthetics: The system is styled around a custom palette featuring Aquamarine (#7FFFD4) and Bloodstone Red (#FF4D4D).
 
-    Immutable Foundation: Built on Fedora’s atomic infrastructure to ensure a "no-break" system state.
+    Immutable Foundation: Built on Fedora’s atomic infrastructure to ensure a robust, reproducible, and "no-break" system state.
 
-    Developer Ready: Pre-configured for Boot.dev students and Linux power users, featuring tools like Helix, Qtile, and Fish.
+    Developer Ready: Pre-configured for Boot.dev students and Linux power users, featuring tools like Helix, Zed, Fish, and Kitty.
 
 🚀 Key Features
 
-    Advanced Scheduling: Integrated support for modern schedulers (EEVDF/BORE) with real-time tracking in Fastfetch.
+    Advanced Scheduling (scx-scheds): Integrated support for modern schedulers via scx_bpfland, optimizing CPU thread prioritization and reducing task latency under heavy load.
 
-    SecureBoot Signed: Full custom signing infrastructure for SecureBoot compatibility using personal MOK keys.
+    SecureBoot Compatible: Full custom signing infrastructure for SecureBoot compatibility using personal MOK keys.
 
-    Custom Identity: Completely overhauled system branding, including a custom Plymouth boot splash and Fastfetch ASCII art.
+    Custom Identity: Completely overhauled system branding, including a custom Plymouth boot splash and tailored Fastfetch ASCII art.
 
-    Hardware Optimized: Specific optimizations for AMD RX 6700 XT and high-speed NVMe storage.
+    Hardware Optimized: Fine-tuned for AMD Ryzen 7 processors, Radeon RX 6700 XT GPUs, and high-speed NVMe storage with direct GPU scanout and VRR support.
 
-🛠️ Structure
+🛠️ Repository Structure
 
-The repository follows the BlueBuild standard with several custom modules:
+The repository follows the standard BlueBuild layout:
 
-    modules/custom-kernel: A specialized bash suite for kernel replacement and module signing.
+    files/ — Custom system-wide overrides, configs, and assets for Plyumouth, fonts, and window rules.
 
-    files/system: Custom system-wide overrides for logos, backgrounds, and terminal presets.
-
-    recipes/recipe.yml: The primary declarative definition of the OS.
+    recipes/recipe.yml — The primary declarative definition of the OS packages, repositories, and systemd services.
 
 ⚓ Installation & Updates
 
@@ -42,11 +40,11 @@ rpm-ostree rebase ostree-unverified-registry:ghcr.io/timothybear11/guardian-os:l
 
 🤝 Special Thanks
 
-A special thanks goes out to Origami for providing the architectural inspiration and the foundational module logic that made the migration to a custom signed kernel possible. This project stands on the shoulders of their excellent work in the BlueBuild community.
-
+A special thanks goes out to the BlueBuild community and the maintainers of Umbriel and Noctalia for providing the modular architecture and tooling that made this setup possible.
 👤 Author
 
 Timothy Brian Criddle (T-Bear)
+
 Software Development Student @ Boot.dev
 
-    Note: All builds include SynthID watermarking and are managed via GitHub Actions for full auditability.
+Note: All builds include automated provenance tracking and are managed via GitHub Actions for full auditability.
