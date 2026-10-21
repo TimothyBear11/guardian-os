@@ -32,7 +32,7 @@ modules:
         - terra-release-multimedia
         # Greeter & Display Services
         - noctalia-greeter
-        - accounts-daemon
+        - accountsservice
         # Steam (32-bit core execution support)
         - steam
         - steam-devices
@@ -52,7 +52,6 @@ modules:
         - noctalia
         - xdg-desktop-portal
         - xdg-desktop-portal-gtk
-        - xdg-desktop-portal-umbriel
         - xdg-desktop-portal-gnome
         # System Essentials
         - fish
