@@ -109,6 +109,7 @@ modules:
         - nodejs
         - ffmpeg
         - elisa
+        - goofcord
         
     remove:
       auto-remove: true
