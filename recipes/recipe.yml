@@ -30,6 +30,9 @@ modules:
         - terra-release
         - terra-release-mesa
         - terra-release-multimedia
+        # Greeter & Display Services
+        - noctalia-greeter
+        - accounts-daemon
         # Steam (32-bit core execution support)
         - steam
         - steam-devices
@@ -158,7 +161,7 @@ modules:
 
   - type: brew
 
-  # Assets Mapping
+  # Assets Mapping & Configuration Files
   - type: files
     files:
       - source: system-fonts
@@ -189,7 +192,7 @@ modules:
         repo:
           title: Flathub (system)
 
-  # System Clean-up & Plymouth Setup
+  # System Clean-up, Plymouth & Greeter Setup
   - type: script
     snippets:
       - "plymouth-set-default-theme guardian"
@@ -197,11 +200,22 @@ modules:
         if [ -f /etc/rpm-ostreed.conf ]; then
           sed -i 's/AutomaticUpdatePolicy=stage/AutomaticUpdatePolicy=none/g' /etc/rpm-ostreed.conf
         fi
+      - |
+        set -euo pipefail
+        mkdir -p /etc/greetd
+        cat << 'EOF' > /etc/greetd/config.toml
+        [default_session]
+        command = "/usr/bin/noctalia-greeter-session"
+        user = "greeter"
+        EOF
+        noctalia-greeter-apply-appearance --setup-system || true
 
   - type: systemd
     system:
       enabled:
         - uupd.timer
+        - greetd.service
+        - accounts-daemon.service
       disabled:
         - dnf-makecache.timer
 
