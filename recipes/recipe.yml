@@ -209,6 +209,20 @@ modules:
         user = "greeter"
         EOF
         noctalia-greeter-apply-appearance --setup-system || true
+      - |
+        set -euo pipefail
+        if ! id -u greeter >/dev/null 2>&1; then
+          useradd -r -M -d /var/lib/noctalia-greeter -s /sbin/nologin -c "greetd greeter user" greeter
+        fi
+        usermod -aG video,render,input greeter
+        
+        # Initialize Noctalia greeter state directory & permissions
+        mkdir -p /var/lib/noctalia-greeter
+        chown -R greeter:greeter /var/lib/noctalia-greeter
+        chmod 0750 /var/lib/noctalia-greeter
+        
+        # Pre-initialize system appearance
+        noctalia-greeter-apply-appearance --setup-system || true
 
   - type: systemd
     system:
