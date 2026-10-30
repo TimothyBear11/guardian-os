@@ -21,7 +21,7 @@ modules:
         - sneexy/floorp
         - bieszczaders/kernel-cachyos-addons
         - lionheartp/Hyprland
-          
+
     install:
       install-weak-deps: false
       packages:
@@ -110,7 +110,7 @@ modules:
         - ffmpeg
         - elisa
         - goofcord
-        
+
     remove:
       auto-remove: true
       packages:
@@ -203,26 +203,30 @@ modules:
         fi
       - |
         set -euo pipefail
-        mkdir -p /etc/greetd
-        cat << 'EOF' > /etc/greetd/config.toml
-        [default_session]
-        command = "/usr/bin/noctalia-greeter-session"
-        user = "greeter"
-        EOF
-        noctalia-greeter-apply-appearance --setup-system || true
-      - |
-        set -euo pipefail
+        
+        # 1. Ensure greeter user exists first
         if ! id -u greeter >/dev/null 2>&1; then
           useradd -r -M -d /var/lib/noctalia-greeter -s /sbin/nologin -c "greetd greeter user" greeter
         fi
         usermod -aG video,render,input greeter
         
-        # Initialize Noctalia greeter state directory & permissions
+        # 2. Initialize Noctalia greeter state directory & permissions
         mkdir -p /var/lib/noctalia-greeter
         chown -R greeter:greeter /var/lib/noctalia-greeter
         chmod 0750 /var/lib/noctalia-greeter
         
-        # Pre-initialize system appearance
+        # 3. Write out the full greetd config with [terminal] included
+        mkdir -p /etc/greetd
+        cat << 'EOF' > /etc/greetd/config.toml
+        [terminal]
+        vt = 1
+
+        [default_session]
+        command = "/usr/bin/noctalia-greeter-session"
+        user = "greeter"
+        EOF
+        
+        # 4. Pre-initialize system appearance
         noctalia-greeter-apply-appearance --setup-system || true
 
   - type: systemd
