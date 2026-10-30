@@ -2,7 +2,7 @@
 name: guardian-os
 description: Guardian OS 
 base-image: ghcr.io/blue-build/base-images/fedora-cosmic
-image-version: 45
+image-version: 44
 
 modules:
   - type: files
